@@ -25,6 +25,10 @@ module.exports = {
         use: ["babel-loader"]
       },
       {
+        test: /\.jsx$/,
+        use: ["babel-loader"]
+      },
+      {
         test: /\.scss$/,
         use: ExtractTextPlugin.extract(
             {
