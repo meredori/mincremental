@@ -1,8 +1,8 @@
 import React from "react";
-import Scoreboard from "../score/scoreboard.jsx";
-import Incrementer from "../Incrementer/Incrementer.jsx";
+import Scoreboard from "../LinearIncremental/scoreboard.jsx";
+import Incrementer from "../LinearIncremental/Incrementer.jsx";
 
-class GameUI extends React.Component {
+class LinearIncrementalUI extends React.Component {
     constructor(props){
         super(props);
         //score is resources, increment is the buttons, tick is the amount per tick and timer is how long each tick is in ms
@@ -40,9 +40,10 @@ class GameUI extends React.Component {
     return (
       <div className="game container">
         <div className="row">
-          <h1>Linear Tick</h1>
+          <h2>Linear Tick</h2>
         </div>
-        <Scoreboard score={this.state.score}/>
+        <Scoreboard score={this.state.score} title="Resources" />
+        <Scoreboard score={this.state.tick} title="Per Tick" />
         {this.state.increment.map((state,index) =>
             <Incrementer key={index} increment={this.incrementScore} amount={this.state.increment[index]} index={index} />
         )}
@@ -50,4 +51,4 @@ class GameUI extends React.Component {
     );
   }
 }
-export default GameUI;
+export default LinearIncrementalUI;
