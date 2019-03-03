@@ -42,7 +42,8 @@ class GameUI extends React.Component {
         <div className="row">
           <h1>Linear Tick</h1>
         </div>
-        <Scoreboard score={this.state.score}/>
+        <Scoreboard score={this.state.score} title="Resources" />
+        <Scoreboard score={this.state.tick} title="Per Tick" />
         {this.state.increment.map((state,index) =>
             <Incrementer key={index} increment={this.incrementScore} amount={this.state.increment[index]} index={index} />
         )}
