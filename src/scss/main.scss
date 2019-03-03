@@ -6,7 +6,7 @@ body {
   color: $primary-color;
 }
 
-.flexrow {
+.row {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,7 +17,7 @@ body {
   flex-direction: column
 }
 
-.incrementing-button {
+.divButton {
   display:inline-block;
     color:#444;
     border:1px solid #CCC;

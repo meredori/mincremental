@@ -1,7 +1,6 @@
-import _ from 'lodash';
-import React from 'react';
 import ReactDOM from 'react-dom';
+import React from 'react';
 import './scss/main.scss';
-import IncrementingCounter from './modules/counter/counter.jsx';
+import GameUI from './modules/UI/gameui.jsx';
 
-ReactDOM.render(<IncrementingCounter name="me" />,document.getElementById("main"));
+ReactDOM.render(<GameUI />,document.getElementById("main"));
