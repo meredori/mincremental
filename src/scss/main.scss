@@ -1,4 +1,6 @@
-$font-stack:    Helvetica, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Play&display=swap');
+
+$font-stack:'Play', sans-serif;
 $primary-color:  #333;
 
 body {
@@ -10,11 +12,27 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 3px;
 }
 
 .container {
   display: block;
   flex-direction: column
+}
+
+.menu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.menu > li {
+  float: left;
+}
+
+a {
+  display: block;
+  padding: 8px;
+  background-color: #dddddd;
 }
 
 .divButton {
@@ -28,6 +46,11 @@ body {
     max-width: 100px;
     padding: 5px;
     text-align: center;
+}
+
+.divButton:active{
+  color:darkgray;
+    box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
 }
 
 .noselect {
