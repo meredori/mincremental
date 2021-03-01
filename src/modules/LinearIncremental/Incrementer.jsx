@@ -5,7 +5,7 @@ class Incrementer extends React.Component {
     return (
       <div className="row">
         <div className="divButton noselect" onClick={() => this.props.increment(this.props.amount,this.props.index)}>
-          <span>Increase by {this.props.amount.amount.toLocaleString()} </span>
+          <span>Increase by {this.props.amount.amount.toLocaleString()} </span><br/>
           <span>Cost: {this.props.amount.cost.toLocaleString()}</span>
         </div>
       </div>
