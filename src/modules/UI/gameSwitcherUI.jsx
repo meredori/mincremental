@@ -5,11 +5,11 @@ import ExponentialIncrementalUI from "./exponentialIncrementalUI.jsx";
 class GameSwitcherUI extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { game: "" };
+    this.state = { game: "", name: "" };
     this.switchGame = this.switchGame.bind(this);
   }
-  switchGame(i){
-      this.setState({game: i});
+  switchGame(i,n){
+      this.setState({game: i, name: n});
   }
   render() {
     return (
@@ -20,8 +20,8 @@ class GameSwitcherUI extends React.Component {
         </div>
         <div className="row">
         <ul className="menu">
-              <li><a className={this.state.game == "<LinearIncrementalUI />" ? 'activegame' : 'notactive'} onClick={() => this.switchGame(<LinearIncrementalUI />)}>Linear Timer</a></li>
-              <li><a onClick={() => this.switchGame(<ExponentialIncrementalUI />)}>Exponential Timer</a></li>
+              <li><a className={this.state.name == "Linear" ? "active" : ""} onClick={() => this.switchGame(<LinearIncrementalUI />,"Linear")}>Linear Timer</a></li>
+              <li><a className={this.state.name == "Exponential" ? "active" : ""} onClick={() => this.switchGame(<ExponentialIncrementalUI />,"Exponential")}>Exponential Timer</a></li>
           </ul>
         </div>
         <div className="row">

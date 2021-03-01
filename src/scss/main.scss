@@ -35,6 +35,10 @@ a {
   background-color: #dddddd;
 }
 
+a.active {
+  background-color: #9e9e9e;
+}
+
 .divButton {
   display:inline-block;
     color:#444;
@@ -49,7 +53,7 @@ a {
 }
 
 .divButton:active{
-  color:darkgray;
+  color:#9e9e9e;
     box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
 }
 
