@@ -29,10 +29,11 @@ body {
   float: left;
 }
 
-a {
+.menu_item > a {
   display: block;
   padding: 8px;
   background-color: #dddddd;
+  cursor: pointer;
 }
 
 a.active {

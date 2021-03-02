@@ -20,8 +20,8 @@ class GameSwitcherUI extends React.Component {
         </div>
         <div className="row">
         <ul className="menu">
-              <li><a className={this.state.name == "Linear" ? "active" : ""} onClick={() => this.switchGame(<LinearIncrementalUI />,"Linear")}>Linear Timer</a></li>
-              <li><a className={this.state.name == "Exponential" ? "active" : ""} onClick={() => this.switchGame(<ExponentialIncrementalUI />,"Exponential")}>Exponential Timer</a></li>
+              <li className="menu_item"><a className={this.state.name == "Linear" ? "active" : ""} onClick={() => this.switchGame(<LinearIncrementalUI />,"Linear")}>Linear Timer</a></li>
+              <li className="menu_item"><a className={this.state.name == "Exponential" ? "active" : ""} onClick={() => this.switchGame(<ExponentialIncrementalUI />,"Exponential")}>Exponential Timer</a></li>
           </ul>
         </div>
         <div className="row">
