@@ -1,0 +1,19 @@
+.menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu_item {
+    float: left;
+  }
+  
+  .menu_item-link {
+    display: block;
+    padding: 8px;
+    background-color: #dddddd;
+    cursor: pointer;
+    &.active,&:active{
+        background-color: #9e9e9e;
+    }
+  }
+  

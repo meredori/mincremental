@@ -1,12 +1,12 @@
 import React from "react";
-import Scoreboard from "../LinearIncremental/scoreboard.jsx";
-import Incrementer from "../LinearIncremental/Incrementer.jsx";
+import Scoreboard from "../../common/scoreboard/scoreboard.jsx";
+import Incrementer from "../../common/incrementer/Incrementer.jsx";
 
 class LinearIncrementalUI extends React.Component {
     constructor(props){
         super(props);
         //score is resources, increment is the buttons, tick is the amount per tick and timer is how long each tick is in ms
-        this.state = {score :1, increment: [{cost:1,amount:1, purchased: 0 }], tick:0, timer:1000};
+        this.state = {score :1, increment: [{cost:1,total:1, purchased: 0 }], tick:0, timer:1000};
         this.incrementScore = this.incrementScore.bind(this);
     }
     componentDidMount() {
@@ -21,11 +21,11 @@ class LinearIncrementalUI extends React.Component {
             var score = this.state.score - x.cost          
             var increment = this.state.increment;
             if (this.state.tick == 0 || increment[i].total == 0){
-                increment.push({cost: x.cost * 10, amount: 10 ** (i+1), purchased: 0 });
+                increment.push({cost: x.cost * 10, total: 10 ** (i+1), purchased: 0 });
             }
             increment[i].cost = Math.ceil((increment[i].cost * ((1.02 + i/10) ** (increment[i].purchased+1))));
             increment[i].purchased += 1;
-            this.setState(state => ({tick: this.state.tick + x.amount}));
+            this.setState(state => ({tick: this.state.tick + x.total}));
             this.setState(state => ({increment: increment}));  
             this.setState(state => ({score: score}));
 
