@@ -6,7 +6,7 @@ class LinearIncrementalUI extends React.Component {
     constructor(props){
         super(props);
         //score is resources, increment is the buttons, tick is the amount per tick and timer is how long each tick is in ms
-        this.state = {score :1, increment: [{cost:1,amount:1}], tick:0, timer:1000};
+        this.state = {score :1, increment: [{cost:1,amount:1, purchased: 0 }], tick:0, timer:1000};
         this.incrementScore = this.incrementScore.bind(this);
     }
     componentDidMount() {
@@ -20,16 +20,12 @@ class LinearIncrementalUI extends React.Component {
         if(this.state.score >= x.cost){
             var score = this.state.score - x.cost          
             var increment = this.state.increment;
-            if(this.state.tick == 0 || (i !=0 && increment[i-1].amount == 1)){
-                increment.push({cost: x.cost * 10, amount: 1});
+            if (this.state.tick == 0 || increment[i].total == 0){
+                increment.push({cost: x.cost * 10, amount: 10 ** (i+1), purchased: 0 });
             }
-            increment[i].cost = Math.ceil(increment[i].cost * 1.2);
-            if(i == 0){
-                this.setState(state => ({tick: this.state.tick + x.amount}));
-            }
-            else {                                            
-                increment[i-1].amount += x.amount;
-            }            
+            increment[i].cost = Math.ceil((increment[i].cost * ((1.02 + i/10) ** (increment[i].purchased+1))));
+            increment[i].purchased += 1;
+            this.setState(state => ({tick: this.state.tick + x.amount}));
             this.setState(state => ({increment: increment}));  
             this.setState(state => ({score: score}));
 

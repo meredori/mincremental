@@ -1,6 +1,7 @@
 import React from "react";
 import LinearIncrementalUI from "./linearIncrementalUI.jsx";
 import ExponentialIncrementalUI from "./exponentialIncrementalUI.jsx";
+import Footer from "./footer.jsx";
 
 class GameSwitcherUI extends React.Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class GameSwitcherUI extends React.Component {
         <div className="row">
         {this.state.game}
         </div>
+        <Footer />
       </div>
     );
   }

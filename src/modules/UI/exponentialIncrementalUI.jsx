@@ -50,7 +50,7 @@ class ExponentialIncrementalUI extends React.Component {
       }
       increment[i].total += increment[i].amount;
       increment[i].purchased += 1;
-      increment[i].cost = Math.ceil((increment[i].cost * (1.05 ** increment[i].purchased)));
+      increment[i].cost = Math.ceil((increment[i].cost * (1.07 ** increment[i].purchased)));
 
       this.setState(state => ({ increment: increment }));
       this.setState(state => ({ score: score }));
