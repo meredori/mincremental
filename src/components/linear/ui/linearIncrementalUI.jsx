@@ -20,7 +20,7 @@ class LinearIncrementalUI extends React.Component {
         if(this.state.score >= x.cost){
             var score = this.state.score - x.cost          
             var increment = this.state.increment;
-            if (this.state.tick == 0 || increment[i].total == 0){
+            if (this.state.tick == 0 || increment[i].purchased == 0){
                 increment.push({cost: x.cost * 10, total: 10 ** (i+1), purchased: 0 });
             }
             increment[i].cost = Math.ceil((increment[i].cost * ((1.02 + i/10) ** (increment[i].purchased+1))));

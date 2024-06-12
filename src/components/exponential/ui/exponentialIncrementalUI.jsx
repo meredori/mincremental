@@ -8,7 +8,7 @@ class ExponentialIncrementalUI extends React.Component {
     //score is resources, increment is the buttons, tick is the amount per tick and timer is how long each tick is in ms
     this.state = {
       score: 1,
-      increment: [{ cost: 1, amount: 1, total: 0, purchased: 0 }],
+      increment: [{ cost: 1, amount: 1, total: 0, purchased: 0, per: 1 }],
       timer: 2000
     };
     this.incrementScore = this.incrementScore.bind(this);
@@ -43,18 +43,22 @@ class ExponentialIncrementalUI extends React.Component {
       var score = this.state.score - x.cost;
       var increment = this.state.increment;
       if (increment[i].total == 0) {
-        increment.push({ cost: x.cost * 10, amount: 1, total: 0, purchased: 0 });
+        increment.push({ cost: x.cost * 10, amount: 1, total: 0, purchased: 0, per: 1 });
       }     
       if (increment[i].purchased % 10 == 0 && increment[i].purchased != 0){
         increment[i].amount = increment[i].amount * 10;      
       }
       increment[i].total += increment[i].amount;
-      increment[i].purchased += 1;
-      increment[i].cost = Math.ceil((increment[i].cost * (1.07 ** increment[i].purchased)));
+      increment[i].purchased += increment[i].per;
+      increment[i].cost = this.calculateNewCost(increment[i].cost, 1.07, increment[i].purchased);
 
       this.setState(state => ({ increment: increment }));
       this.setState(state => ({ score: score }));
     }
+  }
+
+  calculateNewCost(baseCost, growthRate, purchasedCount, adjustmentFactor = 1) {
+    return Math.ceil(baseCost * (growthRate ** purchasedCount) * adjustmentFactor);
   }
   render() {
     return (
