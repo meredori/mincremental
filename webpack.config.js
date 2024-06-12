@@ -20,6 +20,9 @@ module.exports = {
   devServer: {
     contentBase: './dist',
   },
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
   module: {
     rules: [
       {
