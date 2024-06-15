@@ -1,6 +1,6 @@
 import React from "react";
 import Scoreboard from "../../common/scoreboard/scoreboard.jsx";
-import Incrementer from "../../common/incrementer/Incrementer.jsx";
+import Incrementer from "../../common/incrementer/incrementer.jsx";
 
 class ExponentialIncrementalUI extends React.Component {
   constructor(props) {
