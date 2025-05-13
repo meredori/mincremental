@@ -1,6 +1,6 @@
 import React from "react";
-import Scoreboard from "../ExponentialIncremental/scoreboard.jsx";
-import Incrementer from "../ExponentialIncremental/Incrementer.jsx";
+import Scoreboard from "./scoreboard.jsx";
+import Incrementer from "./Incrementer.jsx";
 
 class ExponentialIncrementalUI extends React.Component {
   constructor(props) {
@@ -50,13 +50,10 @@ class ExponentialIncrementalUI extends React.Component {
       this.setState(state => ({ increment: increment }));
       this.setState(state => ({ score: score }));
     }
-  }
-  render() {
+  }  render() {
     return (
-      <div className="game container">
-        <div className="row">
-          <h2>Exponential Tick</h2>
-        </div>
+      <div className="game-exponential">
+        <h2>Exponential Ticker</h2>
         <Scoreboard score={this.state.score} title="Resources" />
         {this.state.increment.map((state, index) => (
           <Incrementer

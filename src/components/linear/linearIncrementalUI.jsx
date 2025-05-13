@@ -1,6 +1,6 @@
 import React from "react";
-import Scoreboard from "../LinearIncremental/scoreboard.jsx";
-import Incrementer from "../LinearIncremental/Incrementer.jsx";
+import Scoreboard from "./scoreboard.jsx";
+import Incrementer from "./Incrementer.jsx";
 
 class LinearIncrementalUI extends React.Component {
     constructor(props){
