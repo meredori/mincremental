@@ -1,11 +1,11 @@
 import React from "react";
-import Scoreboard from "./scoreboard.jsx";
-import Incrementer from "./Incrementer.jsx";
+import Scoreboard from "../shared/Scoreboard.jsx";
+import Incrementer from "../shared/Incrementer.jsx";
+import "./linear.css";
 
-class LinearIncrementalUI extends React.Component {
+class LinearGame extends React.Component {
     constructor(props){
         super(props);
-        //score is resources, increment is the buttons, tick is the amount per tick and timer is how long each tick is in ms
         this.state = {score :1, increment: [{cost:1,amount:1}], tick:0, timer:1000};
         this.incrementScore = this.incrementScore.bind(this);
     }
@@ -16,7 +16,6 @@ class LinearIncrementalUI extends React.Component {
         clearInterval(this.interval);
       }
     incrementScore(x,i){
-        //decrease score by cost, increase tick by amount, increase cost by formula
         if(this.state.score >= x.cost){
             var score = this.state.score - x.cost          
             var increment = this.state.increment;
@@ -32,23 +31,25 @@ class LinearIncrementalUI extends React.Component {
             }            
             this.setState(state => ({increment: increment}));  
             this.setState(state => ({score: score}));
-
         }
- 
     }
   render() {
     return (
-      <div className="game container">
-        <div className="row">
-          <h2>Linear Tick</h2>
-        </div>
+      <div className="game-linear">
+        <h2>Linear Ticker</h2>
         <Scoreboard score={this.state.score} title="Resources" />
         <Scoreboard score={this.state.tick} title="Per Tick" />
-        {this.state.increment.map((state,index) =>
-            <Incrementer key={index} increment={this.incrementScore} amount={this.state.increment[index]} index={index} />
-        )}
+        {this.state.increment.map((state, index) => (
+          <Incrementer
+            key={index}
+            increment={this.incrementScore}
+            amount={this.state.increment[index]}
+            index={index}
+          />
+        ))}
       </div>
     );
   }
 }
-export default LinearIncrementalUI;
+
+export default LinearGame;

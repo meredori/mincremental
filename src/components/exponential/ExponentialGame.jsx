@@ -1,11 +1,11 @@
 import React from "react";
-import Scoreboard from "./scoreboard.jsx";
-import Incrementer from "./Incrementer.jsx";
+import Scoreboard from "../shared/Scoreboard.jsx";
+import Incrementer from "../shared/Incrementer.jsx";
+import "./exponential.css";
 
-class ExponentialIncrementalUI extends React.Component {
+class ExponentialGame extends React.Component {
   constructor(props) {
     super(props);
-    //score is resources, increment is the buttons, tick is the amount per tick and timer is how long each tick is in ms
     this.state = {
       score: 1,
       increment: [{ cost: 1, amount: 1, total: 0 }],
@@ -30,7 +30,6 @@ class ExponentialIncrementalUI extends React.Component {
         );
         this.setState({ increment: increment});
       },
-
       this.state.timer
     );
   }
@@ -38,7 +37,6 @@ class ExponentialIncrementalUI extends React.Component {
     clearInterval(this.interval);
   }
   incrementScore(x, i) {
-    //decrease score by cost, increase tick by amount, increase cost by formula
     if (this.state.score >= x.cost) {
       var score = this.state.score - x.cost;
       var increment = this.state.increment;
@@ -50,7 +48,8 @@ class ExponentialIncrementalUI extends React.Component {
       this.setState(state => ({ increment: increment }));
       this.setState(state => ({ score: score }));
     }
-  }  render() {
+  }
+  render() {
     return (
       <div className="game-exponential">
         <h2>Exponential Ticker</h2>
@@ -67,4 +66,5 @@ class ExponentialIncrementalUI extends React.Component {
     );
   }
 }
-export default ExponentialIncrementalUI;
+
+export default ExponentialGame;

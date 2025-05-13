@@ -1,0 +1,28 @@
+.scoreboard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  background: #fff;
+  border: 2px solid var(--secondary);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px var(--shadow);
+  padding: 0.6rem 1.2rem;
+  margin: 0.5rem 0;
+  font-family: 'Orbitron', Arial, sans-serif;
+  font-size: 1.1rem;
+  color: var(--primary);
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.scoreboard-row span:first-child {
+  color: var(--text);
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.scoreboard-row span:last-child {
+  color: var(--secondary);
+  font-weight: 700;
+}

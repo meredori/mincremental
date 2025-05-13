@@ -1,0 +1,46 @@
+.incrementer {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.increment-button {
+  display: inline-block;
+  background: #fff;
+  color: var(--text);
+  border: 2.5px solid var(--secondary);
+  border-radius: 18px;
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 700;
+  box-shadow: 0 4px 16px var(--shadow);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+  width: 200px;
+  margin: 0.5rem auto;
+}
+
+.increment-button:hover {
+  background: var(--secondary);
+  color: #fff;
+  box-shadow: 0 8px 28px var(--shadow);
+  transform: scale(1.06) rotate(-2deg);
+}
+
+.increment-button:active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--shadow);
+  transform: translateY(2px);
+}
+
+.increment-button span {
+  display: block;
+  line-height: 1.4;
+}
+
+.increment-button .cost {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}

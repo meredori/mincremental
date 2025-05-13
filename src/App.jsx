@@ -3,8 +3,8 @@ import React, { useState, useCallback } from "react";
 import GlobalHeader from "./components/global/GlobalHeader.jsx";
 import GameSelector from "./components/gameselector/GameSelector.jsx";
 import GlobalFooter from "./components/global/GlobalFooter.jsx";
-import ExponentialIncrementalUI from "./components/exponential/exponentialIncrementalUI.jsx";
-import LinearIncrementalUI from "./components/linear/linearIncrementalUI.jsx";
+import ExponentialGame from "./components/exponential/ExponentialGame.jsx";
+import LinearGame from "./components/linear/LinearGame.jsx";
 import './App.css'; // Optional: for global app styles
 import './styles/exponential.css'; // Exponential game styles
 
@@ -36,9 +36,9 @@ function App() {
   // Helper to render the correct game component
   const renderGame = () => {
     if (selectedGameId === "exp") {
-      return <ExponentialIncrementalUI />;
+      return <ExponentialGame />;
     } else if (selectedGameId === "lin") {
-      return <LinearIncrementalUI />;
+      return <LinearGame />;
     } else {
       return (
         <div style={{ padding: '50px', textAlign: 'center', backgroundColor: '#f0f0f0', minHeight: 'calc(100vh - 200px)' }}>
