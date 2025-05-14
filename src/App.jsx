@@ -3,10 +3,11 @@ import React, { useState, useCallback } from "react";
 import GlobalHeader from "./components/global/GlobalHeader.jsx";
 import GameSelector from "./components/gameselector/GameSelector.jsx";
 import GlobalFooter from "./components/global/GlobalFooter.jsx";
+import { APP_VERSION } from "./version.js";
 import ExponentialGame from "./components/exponential/ExponentialGame.jsx";
 import LinearGame from "./components/linear/LinearGame.jsx";
 import './App.css'; // Optional: for global app styles
-import './styles/exponential.css'; // Exponential game styles
+
 
 // Example data (replace with real data/integration)
 const initialUser = { avatarUrl: "", username: "Guest", level: null };
@@ -69,12 +70,7 @@ function App() {
         )}
       </main>
       <GlobalFooter
-        version="1.0.1"
-        links={[
-          { label: "GitHub", href: "https://github.com/" },
-          { label: "Docs", href: "#" },
-          { label: "Support", href: "#support" }
-        ]}
+        version={APP_VERSION}
       />
     </div>
   );

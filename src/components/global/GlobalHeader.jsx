@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
  * - user: { avatarUrl, username, level }
  * - onBack: function
  */
-function GlobalHeader({ user, onBack }) {
+function GlobalHeader({ user, onBack, showBackButton }) {
   return (
     <header className="global-header" style={{
       background: '#fff',
@@ -32,9 +32,11 @@ function GlobalHeader({ user, onBack }) {
         <span className="user-level" style={{ color: 'var(--secondary)', fontSize: '0.95rem', marginLeft: 4 }}>{user?.level ? `Lv. ${user.level}` : ""}</span>
       </div>
       <div className="header-right">
-        <button className="back-btn cartoon-button" onClick={onBack} style={{ fontSize: '1rem', padding: '0.5rem 1.2rem' }}>
-          Back to Game Selection
-        </button>
+        {showBackButton && (
+          <button className="back-btn cartoon-button" onClick={onBack} style={{ fontSize: '1rem', padding: '0.5rem 1.2rem' }}>
+            Back to Select
+          </button>
+        )}
       </div>
     </header>
   );
@@ -47,6 +49,7 @@ GlobalHeader.propTypes = {
     level: PropTypes.number,
   }),
   onBack: PropTypes.func.isRequired,
+  showBackButton: PropTypes.bool
 };
 
 export default GlobalHeader;
