@@ -209,3 +209,8 @@
 }
 
 /* Remove duplicate button styles since they're now in incrementer.css */
+/* Style for effect display text for better contrast - REQ-ISSUE-3 */
+.effect-display {
+  color: var(--text, #333333); /* Use existing text color variable or a dark fallback */
+  font-weight: bold; /* Optional: make it stand out a bit more */
+}
