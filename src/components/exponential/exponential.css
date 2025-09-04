@@ -1,0 +1,100 @@
+.game-exponential {
+  background-color: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 16px var(--shadow);
+  max-width: 600px;
+  margin: 2rem auto;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-exponential h2 {
+  color: var(--primary);
+  font-family: 'Orbitron', Arial, sans-serif;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  text-shadow: 2px 2px var(--shadow);
+}
+
+.game-exponential .scoreboard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  background-color: white;
+  border: 2px solid var(--secondary);
+  border-radius: 14px;
+  margin: 0.8rem 0;
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: var(--transition);
+}
+
+.game-exponential .scoreboard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.game-exponential .scoreboard span {
+  font-family: 'Orbitron', Arial, sans-serif;
+  font-size: 1.1rem;
+}
+
+.game-exponential .scoreboard span:first-child {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.game-exponential .scoreboard span:last-child {
+  color: var(--secondary);
+  font-weight: 700;
+}
+
+.game-exponential .incrementer {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.game-exponential .increment-button {
+  display: inline-block;
+  background: #fff;
+  color: var(--text);
+  border: 2.5px solid var(--secondary);
+  border-radius: 18px;
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 700;
+  box-shadow: 0 4px 16px var(--shadow);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+  width: 200px;
+  margin: 0.5rem auto;
+}
+
+.game-exponential .increment-button:hover {
+  background: var(--secondary);
+  color: #fff;
+  box-shadow: 0 8px 28px var(--shadow);
+  transform: scale(1.06) rotate(-2deg);
+}
+
+.game-exponential .increment-button:active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--shadow);
+  transform: translateY(2px);
+}
+
+.game-exponential .increment-button span {
+  display: block;
+  line-height: 1.4;
+}
+
+.game-exponential .increment-button .cost {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}

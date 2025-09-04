@@ -1,0 +1,146 @@
+.incrementer {
+  background: #fff;
+  border: 2px solid var(--secondary);
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  width: auto;
+  min-width: 200px;
+  box-shadow: 0 2px 8px var(--shadow);
+  box-sizing: border-box;
+}
+
+/* Layout-specific incrementer styles */
+.layout-classic .incrementer,
+.layout-dashboard .incrementer {
+  width: 100%;
+}
+
+.layout-compact .incrementer {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+.layout-vertical-split .incrementer {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.layout-minimalist .incrementer {
+  border-width: 1px;
+  box-shadow: none;
+}
+
+.layout-grid-focus .incrementer {
+  width: 100%;
+  height: 100%;
+}
+
+.layout-tabbed .incrementer {
+  margin: 1rem 0;
+}
+
+.layout-circular .incrementer {
+  transform: rotate(0deg);
+  width: 100%;
+  margin: 0;
+}
+
+.layout-dark .incrementer {
+  background: #2d2d2d;
+  border-color: #404040;
+}
+
+.layout-mobile .incrementer {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.incrementer-header {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.incrementer-header h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+.incrementer-desc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+.incrementer-stats {
+  background: rgba(0,0,0,0.03);
+  border-radius: 8px;
+  padding: 0.8rem;
+  margin: 0.8rem 0;
+  min-height: 120px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+}
+
+.stat-label {
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.stat-value {
+  font-weight: 600;
+}
+
+.stat-value.highlight {
+  color: var(--primary);
+}
+
+.increment-button {
+  display: inline-block;
+  background: #fff;
+  color: var(--text);
+  border: 2.5px solid var(--secondary);
+  border-radius: 18px;
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 700;
+  box-shadow: 0 4px 16px var(--shadow);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+  width: 100%;
+  margin: 0.5rem auto;
+}
+
+.increment-button:hover {
+  background: var(--secondary);
+  color: #fff;
+  box-shadow: 0 8px 28px var(--shadow);
+  transform: scale(1.06) rotate(-2deg);
+}
+
+.increment-button:active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--shadow);
+  transform: translateY(2px);
+}
+
+.increment-button span {
+  display: block;
+  line-height: 1.4;
+}
+
+.increment-button .cost {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}

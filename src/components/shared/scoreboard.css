@@ -1,0 +1,117 @@
+.scoreboard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  background: #fff;
+  border: 2px solid var(--secondary);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px var(--shadow);
+  padding: 0.6rem 1.2rem;
+  margin: 0.5rem 0;
+  font-family: 'Orbitron', Arial, sans-serif;
+  font-size: 1.1rem;
+  color: var(--primary);
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+/* Layout-specific scoreboard styles */
+.layout-dashboard .scoreboard-row {
+  background: #f8f9fa;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: none;
+}
+
+.layout-compact .scoreboard-row {
+  padding: 0.4rem 0.8rem;
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  border-width: 1px;
+}
+
+.layout-vertical-split .scoreboard-row {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.layout-minimalist .scoreboard-row {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0.4rem 0;
+  margin: 0;
+  border-bottom: 1px solid #eee;
+  border-radius: 0;
+}
+
+.layout-grid-focus .scoreboard-row {
+  background: white;
+  border-width: 1px;
+  padding: 0.8rem;
+}
+
+.layout-tabbed .scoreboard-row {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  margin: 0.75rem 0;
+}
+
+.layout-circular .scoreboard-row {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.layout-dark .scoreboard-row {
+  background: #2d2d2d;
+  border-color: #404040;
+  color: white;
+}
+
+.layout-mobile .scoreboard-row {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.scoreboard-row span:first-child {
+  color: var(--text);
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.scoreboard-row span:last-child {
+  color: var(--secondary);
+  font-weight: 700;
+}
+
+/* Layout-specific text styles */
+.layout-dark .scoreboard-row span:first-child {
+  color: #888;
+}
+
+.layout-dark .scoreboard-row span:last-child {
+  color: #fff;
+}
+
+.layout-vertical-split .scoreboard-row span:first-child,
+.layout-vertical-split .scoreboard-row span:last-child {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.layout-minimalist .scoreboard-row span:first-child {
+  color: #666;
+}
+
+.layout-minimalist .scoreboard-row span:last-child {
+  color: var(--primary);
+}
+
+.layout-mobile .scoreboard-row span {
+  font-size: 0.9rem;
+}

@@ -1,0 +1,332 @@
+# Pseudocode: Refactor UI Components
+
+This document outlines the pseudocode for refactoring UI components (`UpgradeButton.jsx`, `IncrementerCard.jsx`, `LinearGame.jsx`) to:
+1.  Utilize the new direct upgrade structure.
+2.  Display upgrade benefits directly on `UpgradeButton.jsx`.
+3.  Use tooltips in `UpgradeButton.jsx` for detailed "current vs. new output" breakdowns.
+4.  Ensure `IncrementerCard.jsx` displays accurate production values.
+5.  Adapt `LinearGame.jsx` to manage state and provide necessary data/functions to child components, including calculating production changes for tooltips.
+
+## 1. Refactor `UpgradeButton.jsx`
+
+This component will need the most significant UI changes to display direct benefits and use tooltips effectively.
+
+```javascript
+// PSEUDOCODE for UpgradeButton.jsx
+
+import React from "react";
+import Tooltip from "./Tooltip"; // Assuming Tooltip component is flexible
+import "./upgrade.css";
+
+// Props:
+// - upgrade: The new direct structure upgrade object
+// - currentProduction: (Number) Current production of the affected incrementer
+// - newProduction: (Number) Projected production if this upgrade is purchased
+// - onPurchase: function(upgradeId)
+// - disabled: boolean
+// - currencySymbol: (String, optional, e.g., "$") for cost display
+
+const UpgradeButton = ({
+  upgrade,
+  currentProduction, // Provided by LinearGame.jsx
+  newProduction,     // Provided by LinearGame.jsx
+  onPurchase,
+  disabled,
+  currencySymbol = ""
+}) => {
+  if (!upgrade || !upgrade.effect) {
+    // TEST: UpgradeButton handles missing upgrade or effect gracefully
+    return <button disabled>Invalid Upgrade</button>;
+  }
+
+  // --- Direct Benefit Label ---
+  let directBenefitLabel = "";
+  const { effect } = upgrade;
+
+  // It's better to calculate the *change* in production for the label
+  const productionIncrease = newProduction - currentProduction;
+  const percentageIncrease = currentProduction > 0 ? (productionIncrease / currentProduction) * 100 : (newProduction > 0 ? Infinity : 0);
+
+  if (productionIncrease > 0) {
+    directBenefitLabel = `+${productionIncrease.toFixed(1)}/sec`;
+    if (isFinite(percentageIncrease) && percentageIncrease > 0) {
+        directBenefitLabel += ` (+${percentageIncrease.toFixed(1)}%)`;
+    }
+  } else {
+    // Fallback or more specific labels based on effect.type if needed
+    // This generic one relies on newProduction being accurately calculated by parent
+    directBenefitLabel = `Improves ${upgrade.affects}`; // Fallback
+  }
+  // TEST: directBenefitLabel accurately reflects production change or effect type.
+
+  // --- Tooltip Content ---
+  const tooltipContent = (
+    <div className="upgrade-tooltip-details">
+      <p>{upgrade.desc}</p>
+      {!upgrade.purchased && (
+        <>
+          <p>Current Output ({upgrade.affects}): {currentProduction.toFixed(1)}/sec</p>
+          <p>New Output ({upgrade.affects}): {newProduction.toFixed(1)}/sec</p>
+          <p>Increase: +{productionIncrease.toFixed(1)}/sec</p>
+        </>
+      )}
+      {/* Add more details based on effect type if necessary */}
+      {effect.type === "SYNERGY_BONUS_PERCENT" && (
+        <p>Synergy with: {effect.sourceIncrementerId}</p>
+      )}
+    </div>
+  );
+  // TEST: tooltipContent shows current, new, and increase in production.
+
+  return (
+    <Tooltip content={tooltipContent}>
+      <button
+        onClick={() => onPurchase && onPurchase(upgrade.id)}
+        disabled={disabled || upgrade.purchased}
+        className={`upgrade-button ${upgrade.purchased ? " purchased" : ""}`}
+      >
+        <span className="upgrade-name">{upgrade.name}</span>
+        <span className="upgrade-effect-direct">{directBenefitLabel}</span>
+        {/* TEST: upgrade-effect-direct class is used for the new label */}
+        <span className="upgrade-cost">Cost: {currencySymbol}{upgrade.cost}</span>
+      </button>
+    </Tooltip>
+  );
+};
+
+export default UpgradeButton;
+```
+
+## 2. Refactor `IncrementerCard.jsx`
+
+This component primarily needs to ensure its `perUnit` display is accurate. The `getPerUnit` prop will receive the already calculated production per unit from `LinearGame.jsx`.
+
+```javascript
+// PSEUDOCODE for IncrementerCard.jsx
+
+import React from "react";
+import Tooltip from "./Tooltip";
+import "./incrementer.css";
+
+// Props:
+// - incrementer: { id, name, description, owned, cost, baseProduction (new), ... }
+// - onIncrement: function(incrementer, index)
+// - index: number
+// - actualPerUnitOutput: (Number) The true current output per single unit of this incrementer, after all upgrades.
+// - totalOutput: (Number) The true total current output for all owned units of this incrementer.
+// - tooltipDetails: (ReactNode) Detailed breakdown for the tooltip, provided by LinearGame.
+
+const IncrementerCard = ({
+  incrementer,
+  onIncrement,
+  index,
+  actualPerUnitOutput, // Calculated by LinearGame and passed as prop
+  totalOutput,         // Calculated by LinearGame and passed as prop
+  tooltipDetails,      // Generated by LinearGame and passed as prop
+}) => {
+  const owned = incrementer.owned || 0;
+  // Cost calculation logic might remain similar or be simplified if baseCost is consistent
+  const cost = incrementer.id === "tier1"
+      ? Math.floor(1 * Math.pow(1.2, owned)) // Example, ensure consistency
+      : incrementer.cost;
+
+  // actualPerUnitOutput is now directly provided
+  // TEST: IncrementerCard displays actualPerUnitOutput correctly.
+
+  return (
+    <div className="tier-container dashboard">
+      <Tooltip content={tooltipDetails}>
+        {/* ... rest of the card structure ... */}
+        <div className="stat-row">
+          <span className="stat-label">Per-1 Output:</span>
+          <span className="stat-value highlight">
+            {actualPerUnitOutput.toFixed(1)}/tick {/* Use toFixed for display */}
+          </span>
+        </div>
+        <div className="stat-row">
+          <span className="stat-label">Total Output:</span>
+          <span className="stat-value">
+            {totalOutput.toFixed(1)}/tick
+          </span>
+        </div>
+        {/* ... other stats like Owned, Cost ... */}
+        {/* TEST: IncrementerCard displays totalOutput correctly. */}
+      </Tooltip>
+    </div>
+  );
+};
+
+export default IncrementerCard;
+```
+
+## 3. Refactor `LinearGame.jsx`
+
+This component will manage the game state and pass calculated production values and effects to child components. It will use the refactored `upgradeEngine.js` for all production calculations.
+
+```javascript
+// PSEUDOCODE for LinearGame.jsx
+
+import React from "react";
+// ... other imports ...
+import IncrementerCard from "../shared/IncrementerCard";
+import UpgradeButton from "../shared/UpgradeButton";
+import { getInitialState, handleIncrement, handleTick, handleUpgrade } from "./linearGameLogic.js"; // Still used for state updates
+import { calculateProduction as calculateIncProduction, checkAndUnlockUpgrades, canUnlockUpgrade as engineCanUnlock } from "./upgradeEngine.js"; // Renamed for clarity
+
+class LinearGame extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...getInitialState(), // Assumes getInitialState now returns upgrades in the new direct format
+      showPurchased: true,
+      // Potentially cache calculated productions if performance becomes an issue,
+      // but for now, calculate in render or helper methods.
+    };
+    // Bind methods
+  }
+
+  // componentDidMount, componentWillUnmount, core handlers (incrementScore, purchaseUpgrade, toggleShowPurchased)
+  // remain largely the same, as they call linearGameLogic which then calls upgradeEngine.
+
+  // --- Helper methods for UI data ---
+
+  // Get current production for a single incrementer (total for all its owned units)
+  getIncrementerTotalProduction = (incrementerId) => {
+    const incData = this.state.increment.find(i => i.id === incrementerId);
+    if (!incData) return 0;
+
+    // Prepare incrementer object for upgradeEngine
+    const engineIncrementer = {
+      ...incData,
+      count: incData.owned,
+      baseProduction: incData.rate, // Assuming 'rate' is the base production per unit
+      upgrades: this.state.upgrades.filter(u => u.affects === incrementerId)
+    };
+    // Prepare state object for upgradeEngine
+    const engineState = {
+      ...this.state, // Pass relevant parts of the game state
+      incrementers: this.state.increment.map(i => ({
+        ...i,
+        count: i.owned,
+        baseProduction: i.rate,
+        tier: parseInt(i.id.replace("tier", "")) // Ensure tier is numeric if engine expects
+      }))
+      // Ensure all data expected by calculateIncProduction is present
+    };
+    return calculateIncProduction(engineIncrementer, engineState);
+    // TEST: getIncrementerTotalProduction uses upgradeEngine.calculateProduction correctly.
+  }
+
+  // Get current production per single unit of an incrementer
+  getIncrementerPerUnitProduction = (incrementerId) => {
+    const incData = this.state.increment.find(i => i.id === incrementerId);
+    if (!incData || incData.owned === 0) return incData ? incData.rate : 0; // Base rate if none owned or no data
+
+    const totalProd = this.getIncrementerTotalProduction(incrementerId);
+    return totalProd / incData.owned;
+    // TEST: getIncrementerPerUnitProduction calculates per unit value correctly.
+  }
+
+
+  // Calculate the effect of a potential upgrade purchase for tooltip display
+  getProjectedProductionWithUpgrade = (incrementerId, upgradeToApply) => {
+    const incData = this.state.increment.find(i => i.id === incrementerId);
+    if (!incData) return 0;
+
+    // Simulate state with the upgrade purchased
+    // IMPORTANT: This is a shallow simulation for one upgrade.
+    // Complex interactions might require a deeper simulation if upgrades affect each other's conditions.
+    const tempUpgrades = this.state.upgrades.map(u =>
+      u.id === upgradeToApply.id ? { ...u, purchased: true, unlocked: true } : u // Simulate as purchased
+    );
+
+    const engineIncrementer = {
+      ...incData,
+      count: incData.owned,
+      baseProduction: incData.rate,
+      upgrades: tempUpgrades.filter(u => u.affects === incrementerId && u.purchased && u.unlocked) // Use simulated upgrades
+    };
+    const engineState = {
+      ...this.state,
+      upgrades: tempUpgrades, // Use simulated upgrades for the calculation context
+      incrementers: this.state.increment.map(i => ({
+        ...i,
+        count: i.owned,
+        baseProduction: i.rate,
+        tier: parseInt(i.id.replace("tier", ""))
+      }))
+    };
+    return calculateIncProduction(engineIncrementer, engineState);
+    // TEST: getProjectedProductionWithUpgrade correctly simulates and calculates future production.
+  }
+
+  // Method to generate tooltip details for IncrementerCard
+  getIncrementerTooltipDetails = (incrementer) => {
+    const perUnit = this.getIncrementerPerUnitProduction(incrementer.id);
+    const total = this.getIncrementerTotalProduction(incrementer.id);
+    // Could add more breakdown here if needed, e.g., list active upgrades
+    return (
+      <>
+        <div><b>Owned:</b> {incrementer.owned}</div>
+        <div><b>Base Rate (per 1):</b> {incrementer.rate.toFixed(1)}/sec</div>
+        <div><b>Actual Output (per 1):</b> {perUnit.toFixed(1)}/sec</div>
+        <div><b>Total Output (all owned):</b> {total.toFixed(1)}/sec</div>
+        {/* Add upgrade list or effect breakdown if desired */}
+      </>
+    );
+    // TEST: getIncrementerTooltipDetails provides comprehensive data.
+  }
+
+
+  render() {
+    // ... existing score, total production displays ...
+    // These will now use getIncrementerTotalProduction internally or a new getTotalProduction method.
+
+    // For IncrementerCard:
+    // <IncrementerCard
+    //   key={inc.id}
+    //   incrementer={inc}
+    //   actualPerUnitOutput={this.getIncrementerPerUnitProduction(inc.id)}
+    //   totalOutput={this.getIncrementerTotalProduction(inc.id)}
+    //   tooltipDetails={this.getIncrementerTooltipDetails(inc)}
+    //   ...
+    // />
+
+    // For UpgradeButton:
+    // const affectedIncrementerId = upgrade.affects;
+    // const currentProd = this.getIncrementerTotalProduction(affectedIncrementerId);
+    // const newProd = this.getProjectedProductionWithUpgrade(affectedIncrementerId, upgrade);
+    // <UpgradeButton
+    //   key={upgrade.id}
+    //   upgrade={upgrade}
+    //   currentProduction={currentProd}
+    //   newProduction={newProd}
+    //   disabled={this.state.score < upgrade.cost || upgrade.purchased}
+    //   ...
+    // />
+    // TEST: LinearGame correctly passes current and new production props to UpgradeButton.
+    // TEST: LinearGame correctly passes actualPerUnitOutput, totalOutput, and tooltipDetails to IncrementerCard.
+
+    return ( /* JSX structure */ );
+  }
+}
+
+export default LinearGame;
+```
+
+## Summary of UI Changes:
+-   **`UpgradeButton.jsx`**:
+    -   Receives `currentProduction` and `newProduction` for the affected incrementer.
+    -   Displays a direct benefit label (e.g., "+X/sec (+Y%)").
+    -   Tooltip shows `upgrade.desc`, current output, new output, and increase.
+-   **`IncrementerCard.jsx`**:
+    -   Receives `actualPerUnitOutput`, `totalOutput`, and `tooltipDetails` as props from `LinearGame.jsx`.
+    -   Displays these pre-calculated values.
+-   **`LinearGame.jsx`**:
+    -   Uses `upgradeEngine.calculateProduction` (aliased as `calculateIncProduction`) for all production calculations.
+    -   Provides `getIncrementerTotalProduction` and `getIncrementerPerUnitProduction` helper methods.
+    -   Provides `getProjectedProductionWithUpgrade` to calculate the outcome for `UpgradeButton` tooltips.
+    -   Provides `getIncrementerTooltipDetails` to generate rich tooltips for `IncrementerCard`.
+    -   Passes the necessary calculated props to `UpgradeButton` and `IncrementerCard`.
+    -   Ensures `getInitialState` from `linearGameLogic.js` provides upgrades in the new direct format.
+    -   The `handleTick` in `linearGameLogic.js` will call the refactored `upgradeEngine.checkAndUnlockUpgrades` and `calculateProduction`.
