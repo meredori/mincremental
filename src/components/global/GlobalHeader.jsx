@@ -28,8 +28,18 @@ function GlobalHeader({ user, onBack, showBackButton }) {
           className="user-avatar"
           style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid var(--accent)', background: '#f5f5f5' }}
         />
-        <span className="username" style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '1.1rem' }}>{user?.username || "Guest"}</span>
-        <span className="user-level" style={{ color: 'var(--secondary)', fontSize: '0.95rem', marginLeft: 4 }}>{user?.level ? `Lv. ${user.level}` : ""}</span>
+        <span
+          className="username"
+          style={{ fontWeight: 600, color: 'var(--color-text-strong)', fontSize: '1.1rem' }}
+        >
+          {user?.username || "Guest"}
+        </span>
+        <span
+          className="user-level"
+          style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', marginLeft: 4 }}
+        >
+          {user?.level ? `Lv. ${user.level}` : ""}
+        </span>
       </div>
       <div className="header-right">
         {showBackButton && (
