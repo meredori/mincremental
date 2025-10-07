@@ -4,6 +4,7 @@
   "private": true,
   "main": "index.js",
   "dependencies": {
+    "@rollup/rollup-win32-x64-msvc": "^4.52.4",
     "bootstrap": "^5.3.3",
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",
