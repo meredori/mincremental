@@ -1,27 +1,19 @@
 // src/App.jsx
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo, lazy, Suspense } from "react";
 import GlobalHeader from "./components/global/GlobalHeader.jsx";
 import GameSelector from "./components/gameselector/GameSelector.jsx";
 import GlobalFooter from "./components/global/GlobalFooter.jsx";
+import ThemeProvider from "./components/global/ThemeProvider.jsx";
 import { APP_VERSION } from "./version.js";
-import ExponentialGame from "./components/exponential/ExponentialGame.jsx";
-import LinearGame from "./components/linear/LinearGame.jsx";
-import './App.css'; // Optional: for global app styles
+import { getAvailableGames, getGameById } from "./gameRegistry/index.js";
+import "./App.css";
 
-
-// Example data (replace with real data/integration)
 const initialUser = { avatarUrl: "", username: "Guest", level: null };
-const initialGames = [
-  { id: "exp", name: "Exponential Incremental", description: "Reach for the stars, one exponent at a time!", imageUrl: "https://via.placeholder.com/250x150/4f8cff/FFFFFF?text=EXP+Game", accentColor: "#4f8cff" },
-  { id: "lin", name: "Linear Incremental", description: "Slow and steady wins the race. Click your way to victory.", imageUrl: "https://via.placeholder.com/250x150/ffb347/FFFFFF?text=LIN+Game", accentColor: "#ffb347" },
-  { id: "cosmic", name: "Cosmic Racer X", description: "Race through asteroid fields and nebulae.", imageUrl: "https://via.placeholder.com/250x150/FF00FF/0D0D0D?text=Cosmic+Racer", accentColor: "#FF00FF" },
-  { id: "pixel", name: "Pixel Dungeon Quest", description: "Explore dangerous dungeons in glorious pixel art.", imageUrl: "https://via.placeholder.com/250x150/00FFFF/0D0D0D?text=Pixel+Dungeon", accentColor: "#00FFFF" },
-];
 
 function App() {
   const [user] = useState(initialUser);
-  const [games] = useState(initialGames);
-  const [currentView, setCurrentView] = useState("selector"); // 'selector' or 'game'
+  const games = useMemo(() => getAvailableGames(), []);
+  const [currentView, setCurrentView] = useState("selector");
   const [selectedGameId, setSelectedGameId] = useState(null);
 
   const handleSelectGame = useCallback((gameId) => {
@@ -34,45 +26,52 @@ function App() {
     setCurrentView("selector");
   }, []);
 
-  // Helper to render the correct game component
-  const renderGame = () => {
-    if (selectedGameId === "exp") {
-      return <ExponentialGame />;
-    } else if (selectedGameId === "lin") {
-      return <LinearGame />;
-    } else {
-      return (
-        <div style={{ padding: '50px', textAlign: 'center', backgroundColor: '#f0f0f0', minHeight: 'calc(100vh - 200px)' }}>
-          <h2>Game not found</h2>
-          <button onClick={handleGoBackToSelector} style={{ padding: '10px 20px', fontSize: '1em', cursor: 'pointer' }}>
-            Back to Game Selector
-          </button>
-        </div>
-      );
+  const selectedGame = useMemo(() => {
+    if (!selectedGameId) {
+      return null;
     }
-  };
+    return getGameById(selectedGameId);
+  }, [selectedGameId]);
+
+  const ActiveGameComponent = useMemo(() => {
+    if (!selectedGame) {
+      return null;
+    }
+    return lazy(selectedGame.loadComponent);
+  }, [selectedGame]);
 
   return (
-    <div className="app-container">
-      <GlobalHeader
-        user={user}
-        onBack={currentView === 'game' ? handleGoBackToSelector : () => {}}
-        showBackButton={currentView === 'game'}
-      />
-      <main className="app-main-content">
-        {currentView === "selector" ? (
-          <GameSelector
-            games={games}
-            onSelect={handleSelectGame}
-          />
-        ) : (
-          renderGame()
-        )}
-      </main>
-      <GlobalFooter
-        version={APP_VERSION}
-      />
-    </div>
+    <ThemeProvider palette={selectedGame?.palette}>
+      <div className="app-container">
+        <GlobalHeader
+          user={user}
+          onBack={currentView === "game" ? handleGoBackToSelector : () => {}}
+          showBackButton={currentView === "game"}
+        />
+        <main className="app-main-content">
+          {currentView === "selector" ? (
+            <GameSelector
+              games={games}
+              onSelect={handleSelectGame}
+            />
+          ) : selectedGame && ActiveGameComponent ? (
+            <Suspense fallback={<div className="game-loading">Loading game...</div>}>
+              <ActiveGameComponent />
+            </Suspense>
+          ) : (
+            <div className="game-not-found">
+              <h2>Game not found</h2>
+              <button onClick={handleGoBackToSelector} className="back-button">
+                Back to Game Selector
+              </button>
+            </div>
+          )}
+        </main>
+        <GlobalFooter
+          version={APP_VERSION}
+        />
+      </div>
+    </ThemeProvider>
   );
 }
 
