@@ -110,7 +110,7 @@ function LinearGame() {
         affectedName = targetInc.name;
         currentProduction = targetInc.totalProductionFromType;
 
-        const simulatedInc = JSON.parse(JSON.stringify(targetInc));
+        const simulatedInc = structuredClone(targetInc);
         if (!simulatedInc.isUnlocked) {
           simulatedInc.isUnlocked = true;
         }
