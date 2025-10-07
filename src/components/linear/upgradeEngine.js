@@ -1,9 +1,5 @@
 // src/components/linear/upgradeEngine.js
 
-/**
- * Utility: Validate and sanitize a number (non-negative, finite, not NaN)
- * Ensures whole numbers as per REQ-004 for costs, and allows safe processing of effect values.
- */
 function safeNumber(val, fallback = 0, floorOutput = true) {
   if (typeof val !== "number" || !isFinite(val) || isNaN(val)) {
     return floorOutput ? Math.floor(fallback) : fallback;
@@ -12,137 +8,99 @@ function safeNumber(val, fallback = 0, floorOutput = true) {
   return floorOutput ? Math.floor(result) : result;
 }
 
-// Define all upgrades available in the game.
-// REQ-005: First incrementer ('thingamabob') upgrades should be small.
-// REQ-006: Overall upgrade impact reduced, costs might be higher.
-// REQ-004: All costs must be whole numbers.
 export const allUpgradeDefinitions = {
-  // --- Thingamabob Upgrades (REQ-005) ---
-  'thingamabob_flat_1': {
-    id: 'thingamabob_flat_1',
-    name: 'Minor Tweak',
-    description: 'Slightly improves Thingamabob output. (+0.2 to base effectiveness)',
-    cost: safeNumber(20), // REQ-004, REQ-006
-    effects: [
-      { targetId: 'thingamabob', type: 'FLAT_BONUS', value: 0.2 } // REQ-005
-    ],
-    tier: 1,
-  },
-  'thingamabob_flat_2': {
-    id: 'thingamabob_flat_2',
-    name: 'Small Adjustment',
-    description: 'Another small boost to Thingamabobs. (+0.2 to base effectiveness)',
-    cost: safeNumber(30),
-    effects: [
-      { targetId: 'thingamabob', type: 'FLAT_BONUS', value: 0.2 }
-    ],
-    tier: 1,
-    unlockConditions: { purchasedUpgrades: ['thingamabob_flat_1'] } // Example unlock
-  },
-  'thingamabob_flat_3': {
-    id: 'thingamabob_flat_3',
-    name: 'Fine Tuning',
-    description: 'More fine tuning for Thingamabobs. (+0.2 to base effectiveness)',
+  spark_polish_brigade: {
+    id: "spark_polish_brigade",
+    name: "Lantern Polish Brigade",
+    description: "Apprentices buff every gatherer's mirrors, adding +1 lumen per Spark Gatherer.",
     cost: safeNumber(45),
-    effects: [
-      { targetId: 'thingamabob', type: 'FLAT_BONUS', value: 0.2 }
-    ],
+    effects: [{ targetId: "spark_gatherer", type: "FLAT_BONUS", value: 1 }],
     tier: 1,
-    unlockConditions: { purchasedUpgrades: ['thingamabob_flat_2'] }
+    unlockConditions: { incrementerCount: { id: "spark_gatherer", count: 5 } },
   },
-  'thingamabob_flat_4': {
-    id: 'thingamabob_flat_4',
-    name: 'Calibration',
-    description: 'Calibrating Thingamabobs. (+0.2 to base effectiveness)',
-    cost: safeNumber(65),
-    effects: [
-      { targetId: 'thingamabob', type: 'FLAT_BONUS', value: 0.2 }
-    ],
+  spark_clockwork_sync: {
+    id: "spark_clockwork_sync",
+    name: "Clockwork Synchronizers",
+    description: "Tiny gears keep gatherers in rhythm, multiplying their output by 15%.",
+    cost: safeNumber(120),
+    effects: [{ targetId: "spark_gatherer", type: "MULTIPLIER", value: 1.15 }],
     tier: 1,
-    unlockConditions: { purchasedUpgrades: ['thingamabob_flat_3'] }
+    unlockConditions: { lifetimeLumens: 180 },
   },
-  'thingamabob_flat_5_milestone': {
-    id: 'thingamabob_flat_5_milestone',
-    name: 'Efficiency Breakthrough!',
-    description: 'Thingamabobs are now noticeably better! (+0.2, should make them produce 2 with base 1 after 5 such upgrades)',
-    cost: safeNumber(100),
-    effects: [
-      { targetId: 'thingamabob', type: 'FLAT_BONUS', value: 0.2 }
-      // After this, total flatBonus = 1.0. If baseValue = 1, individualProduction = floor((1+1)*multiplier)
-    ],
-    tier: 1,
-    unlockConditions: { purchasedUpgrades: ['thingamabob_flat_4'] }
-  },
-  'thingamabob_mult_1': {
-    id: 'thingamabob_mult_1',
-    name: 'Thingamabob Gearing',
-    description: 'Improves Thingamabob output by 5%.',
-    cost: safeNumber(150),
-    effects: [
-      // REQ-006: Smaller multiplier
-      { targetId: 'thingamabob', type: 'MULTIPLIER', value: 1.05 }
-    ],
-    tier: 1,
-    unlockConditions: { incrementerCount: { id: 'thingamabob', count: 10 } }
-  },
-
-  // --- Global Upgrades (REQ-006) ---
-  'global_mult_1': {
-    id: 'global_mult_1',
-    name: 'Universal Production Boost I',
-    description: 'All incrementers produce 2% more.',
-    cost: safeNumber(500), // REQ-006: Higher cost
-    effects: [
-      // REQ-006: Smaller multiplier
-      { targetId: 'GLOBAL', type: 'GLOBAL_MULTIPLIER', value: 1.02 }
-    ],
-    tier: 0, // Or some general tier
-    unlockConditions: { score: 1000 } // Example: unlock when score reaches 1000
-  },
-  'global_mult_2': {
-    id: 'global_mult_2',
-    name: 'Universal Production Boost II',
-    description: 'All incrementers produce an additional 3% more.',
-    cost: safeNumber(2500),
-    effects: [
-      { targetId: 'GLOBAL', type: 'GLOBAL_MULTIPLIER', value: 1.03 }
-    ],
-    tier: 0,
-    unlockConditions: { purchasedUpgrades: ['global_mult_1'], score: 5000 }
-  },
-  // Add more upgrades for other incrementers and global effects as needed
-  // Example for a second incrementer type 'widget'
-  /*
-  'widget_base_value_1': {
-    id: 'widget_base_value_1',
-    name: 'Improved Widgets',
-    description: 'Increases base production of Widgets by 5.',
-    cost: safeNumber(1000),
-    effects: [
-      { targetId: 'widget', type: 'FLAT_BONUS', value: 5 }
-    ],
-    tier: 2, // Assuming widget is tier 2
-    unlockConditions: { incrementerCount: { id: 'widget', count: 1 } }
-  },
-  'widget_mult_1': {
-    id: 'widget_mult_1',
-    name: 'Widget Assembly Line',
-    description: 'Improves Widget output by 10%.',
-    cost: safeNumber(2000),
-    effects: [
-      { targetId: 'widget', type: 'MULTIPLIER', value: 1.10 }
-    ],
+  prism_facet_calibration: {
+    id: "prism_facet_calibration",
+    name: "Facet Calibration",
+    description: "Prism Grinders receive calibrated guides, granting +3 lumens each.",
+    cost: safeNumber(280),
+    effects: [{ targetId: "prism_grinder", type: "FLAT_BONUS", value: 3 }],
     tier: 2,
-    unlockConditions: { incrementerCount: { id: 'widget', count: 10 } }
+    unlockConditions: { incrementerCount: { id: "prism_grinder", count: 3 } },
   },
-  */
+  prism_phase_harmonics: {
+    id: "prism_phase_harmonics",
+    name: "Phase Harmonics",
+    description: "Resonant chords align every prism, boosting grinders by 12%.",
+    cost: safeNumber(520),
+    effects: [{ targetId: "prism_grinder", type: "MULTIPLIER", value: 1.12 }],
+    tier: 2,
+    unlockConditions: { lifetimeLumens: 650 },
+  },
+  beam_seamstresses: {
+    id: "beam_seamstresses",
+    name: "Beam Seamstresses",
+    description: "Splicers learn to stitch brighter seams, adding +6 lumens each.",
+    cost: safeNumber(1500),
+    effects: [{ targetId: "beam_splicer", type: "FLAT_BONUS", value: 6 }],
+    tier: 3,
+    unlockConditions: { incrementerCount: { id: "beam_splicer", count: 2 } },
+  },
+  aurora_flux_capacitor: {
+    id: "aurora_flux_capacitor",
+    name: "Aurora Flux Capacitor",
+    description: "Forge channels stabilized to surge 10% brighter.",
+    cost: safeNumber(4200),
+    effects: [{ targetId: "aurora_forge", type: "MULTIPLIER", value: 1.1 }],
+    tier: 4,
+    unlockConditions: { lifetimeLumens: 2800 },
+  },
+  dawn_projector_magnifier: {
+    id: "dawn_projector_magnifier",
+    name: "Dawn Magnifiers",
+    description: "Lens arrays add +24 lumens to every Dawn Projector.",
+    cost: safeNumber(9800),
+    effects: [{ targetId: "dawn_projector", type: "FLAT_BONUS", value: 24 }],
+    tier: 5,
+    unlockConditions: { lifetimeLumens: 7200 },
+  },
+  solstice_core_tempering: {
+    id: "solstice_core_tempering",
+    name: "Solstice Core Tempering",
+    description: "Master smiths temper the engines, multiplying their yield by 8%.",
+    cost: safeNumber(26500),
+    effects: [{ targetId: "solstice_engine", type: "MULTIPLIER", value: 1.08 }],
+    tier: 6,
+    unlockConditions: { lifetimeLumens: 15500 },
+  },
+  workshop_consortium: {
+    id: "workshop_consortium",
+    name: "Luminous Consortium",
+    description: "Guildmasters share schematics, raising all production by 5%.",
+    cost: safeNumber(1800),
+    effects: [{ targetId: "GLOBAL", type: "GLOBAL_MULTIPLIER", value: 1.05 }],
+    tier: 0,
+    unlockConditions: { lifetimeLumens: 1200 },
+  },
+  celestial_infusion: {
+    id: "celestial_infusion",
+    name: "Celestial Infusion",
+    description: "A midnight ceremony infuses every station, granting another 7% to all output.",
+    cost: safeNumber(7600),
+    effects: [{ targetId: "GLOBAL", type: "GLOBAL_MULTIPLIER", value: 1.07 }],
+    tier: 0,
+    unlockConditions: { purchasedUpgrades: ["workshop_consortium"], lifetimeLumens: 5200 },
+  },
 };
 
-/**
- * Retrieves a deep copy of a specific upgrade definition.
- * @param {string} upgradeId - The ID of the upgrade to retrieve.
- * @returns {object | undefined} The upgrade definition or undefined if not found.
- */
 export function getUpgradeDefinition(upgradeId) {
   if (allUpgradeDefinitions[upgradeId]) {
     return JSON.parse(JSON.stringify(allUpgradeDefinitions[upgradeId]));
@@ -150,37 +108,28 @@ export function getUpgradeDefinition(upgradeId) {
   return undefined;
 }
 
-/**
- * Retrieves all upgrade definitions.
- * @returns {object} A new object containing all upgrade definitions.
- */
 export function getAllUpgradeDefinitions() {
-    return JSON.parse(JSON.stringify(allUpgradeDefinitions));
+  return JSON.parse(JSON.stringify(allUpgradeDefinitions));
 }
 
-
-/**
- * Gets all upgrades that are currently available for purchase.
- * Availability can be based on unlock conditions being met and not already purchased.
- * @param {object} gameState - The current game state.
- * @returns {Array<object>} An array of available upgrade definitions.
- */
 export function getAvailableUpgrades(gameState) {
   const available = [];
   for (const id in allUpgradeDefinitions) {
     const definition = allUpgradeDefinitions[id];
     if (gameState.purchasedUpgrades && gameState.purchasedUpgrades.includes(id)) {
-      continue; // Already purchased
+      if (gameState.settings?.showPurchased) {
+        available.push({ ...definition, isAffordable: false });
+      }
+      continue;
     }
 
-    let unlocked = true; // Assume unlocked if no conditions
+    let unlocked = true;
     if (definition.unlockConditions) {
       unlocked = checkUnlockConditions(definition.unlockConditions, gameState);
     }
 
     if (unlocked) {
       const displayDefinition = JSON.parse(JSON.stringify(definition));
-      // Optionally add affordability for UI, though linearGameLogic handles actual purchase logic
       displayDefinition.isAffordable = gameState.score >= safeNumber(displayDefinition.cost);
       available.push(displayDefinition);
     }
@@ -188,36 +137,34 @@ export function getAvailableUpgrades(gameState) {
   return available;
 }
 
-/**
- * Checks if the unlock conditions for an upgrade are met.
- * @param {object} conditions - The unlockConditions object from an upgrade definition.
- * @param {object} gameState - The current game state.
- * @returns {boolean} True if all conditions are met, false otherwise.
- */
 function checkUnlockConditions(conditions, gameState) {
-  if (!conditions) return true; // No conditions means it's unlocked (or unlocked by other means)
+  if (!conditions) return true;
 
-  if (conditions.score) {
-    if (gameState.score < safeNumber(conditions.score)) {
+  if (conditions.score && safeNumber(gameState.score) < conditions.score) {
+    return false;
+  }
+
+  if (
+    conditions.lifetimeLumens &&
+    safeNumber(gameState.statistics?.lifetimeLumens ?? gameState.score) < conditions.lifetimeLumens
+  ) {
+    return false;
+  }
+
+  if (conditions.purchasedUpgrades) {
+    const purchased = new Set(gameState.purchasedUpgrades || []);
+    if (!conditions.purchasedUpgrades.every((id) => purchased.has(id))) {
       return false;
     }
   }
 
   if (conditions.incrementerCount) {
-    const targetInc = gameState.incrementers.find(inc => inc.id === conditions.incrementerCount.id);
-    if (!targetInc || targetInc.count < safeNumber(conditions.incrementerCount.count)) {
+    const { id, count } = conditions.incrementerCount;
+    const incrementer = gameState.incrementers?.find((inc) => inc.id === id);
+    if (!incrementer || safeNumber(incrementer.count) < count) {
       return false;
     }
   }
 
-  if (conditions.purchasedUpgrades) {
-    for (const requiredUpgradeId of conditions.purchasedUpgrades) {
-      if (!gameState.purchasedUpgrades.includes(requiredUpgradeId)) {
-        return false;
-      }
-    }
-  }
-  // Add more condition types here as needed
-
-  return true; // All specified conditions met
+  return true;
 }

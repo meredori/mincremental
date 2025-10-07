@@ -1,216 +1,291 @@
-.game-linear {
-  background-color: var(--color-surface);
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 8px 16px var(--color-shadow);
-  min-width: 1200px;
-  width: 95%;
+.glimmerglass-experience {
+  background: linear-gradient(145deg, var(--color-background), rgba(20, 35, 60, 0.65));
+  color: var(--color-text);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 45px var(--color-shadow);
+  width: min(1200px, 96%);
   margin: 2rem auto;
-  transition: var(--transition-default);
-  position: relative;
-}
-
-.game-linear-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.game-linear-stats {
+  backdrop-filter: blur(12px);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   gap: 2rem;
-  margin-bottom: 2rem;
 }
 
-.game-linear-content {
-  display: grid;
-  grid-template-columns: minmax(300px, 1fr) 2fr;
-  gap: 2rem;
-  padding: 1rem;
-  height: 70vh;
-  overflow: hidden;
+.glimmerglass-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
 }
 
-.game-linear-tiers,
-.game-linear-upgrades {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  height: 100%;
-}
-
-.game-linear-tiers h3,
-.game-linear-upgrades h3 {
-  margin: 0 0 1.5rem 0;
+.header-titles h2 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
   color: var(--color-primary);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+}
+
+.header-titles p {
+  margin: 0.5rem 0 0;
+  max-width: 32rem;
+  color: rgba(226, 244, 255, 0.85);
+  line-height: 1.5;
+}
+
+.cast-light {
+  align-self: center;
+  padding: 0.85rem 1.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: radial-gradient(circle at top, var(--color-accent), var(--color-secondary));
+  color: #0c1120;
+  box-shadow: 0 10px 25px rgba(255, 234, 127, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cast-light:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 32px rgba(255, 234, 127, 0.5);
+}
+
+.glimmerglass-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+}
+
+.metric-card {
+  background: rgba(21, 34, 56, 0.75);
+  border-radius: 18px;
+  padding: 1.2rem;
+  border: 1px solid rgba(120, 192, 224, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(226, 244, 255, 0.7);
+}
+
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.glimmerglass-body {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 2rem;
+}
+
+.glimmerglass-production,
+.glimmerglass-upgrades {
+  background: rgba(12, 17, 32, 0.65);
+  border-radius: 20px;
+  padding: 1.8rem;
+  border: 1px solid rgba(104, 172, 222, 0.18);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section-heading h3 {
+  margin: 0;
   font-size: 1.4rem;
-  text-align: center;
+  color: var(--color-secondary);
+}
+
+.section-heading p {
+  margin: 0.35rem 0 0;
+  color: rgba(226, 244, 255, 0.75);
 }
 
 .tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.incrementer {
+  background: rgba(17, 26, 45, 0.8);
+  border-radius: 18px;
+  padding: 1.2rem;
+  border: 1px solid rgba(120, 192, 224, 0.25);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.increment-button {
+  background: var(--color-primary);
+  color: #0c1120;
+  border-radius: 999px;
+  padding: 0.65rem 1.4rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.increment-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(106, 209, 255, 0.35);
+}
+
+.increment-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 1.5rem;
+  text-align: center;
+  background: rgba(17, 26, 45, 0.5);
+  border-radius: 16px;
+  color: rgba(226, 244, 255, 0.7);
+}
+
+.locked-tiers {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  padding-right: 0.5rem;
-}
-
-.upgrades-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 320px));
-  justify-content: center;
   gap: 1rem;
-  max-height: 70vh;
-  overflow-y: auto;
-  padding-right: 0.5rem;
 }
 
-.upgrades-grid::-webkit-scrollbar {
-  width: 8px;
+.locked-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
-.upgrades-grid::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+.locked-card {
+  background: rgba(13, 21, 38, 0.75);
+  border-radius: 16px;
+  padding: 1rem;
+  border: 1px dashed rgba(120, 192, 224, 0.3);
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
-.upgrades-grid::-webkit-scrollbar-thumb {
-  background: var(--color-secondary);
-  border-radius: 4px;
+.locked-name {
+  font-weight: 600;
+  color: var(--color-secondary);
 }
 
-.tier-container {
-  background: var(--color-surface);
-  border-radius: 12px;
-  padding: 1.2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  min-height: 120px;
-  flex-shrink: 0;
-  box-sizing: border-box;
+.locked-description {
+  margin: 0;
+  color: rgba(226, 244, 255, 0.7);
 }
 
-/* Layout-specific tier-container styles */
-.layout-compact .tier-container {
-  padding: 0.8rem;
-  min-height: 100px;
+.locked-threshold {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 234, 127, 0.8);
 }
 
-.layout-vertical-split .tier-container {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.locked-tooltip {
+  max-width: 16rem;
 }
 
-.layout-minimalist .tier-container {
-  padding: 0.8rem;
-  box-shadow: none;
-  border: 1px solid #eee;
+.locked-tooltip strong {
+  display: block;
+  margin-bottom: 0.4rem;
 }
 
-.layout-grid-focus .tier-container {
-  min-height: 130px;
-}
-
-.layout-tabbed .tier-container {
-  margin: 0.5rem 0;
-}
-
-.layout-circular .tier-container {
-  max-width: 200px;
-  margin: 0 auto;
-}
-
-.layout-dark .tier-container {
-  background: #2d2d2d;
-  border: 1px solid #404040;
-}
-
-.layout-mobile .tier-container {
-  padding: 0.8rem;
-  min-height: 90px;
-}
-
-.game-linear h2 {
-  color: var(--color-primary);
-  font-family: 'Orbitron', Arial, sans-serif;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  text-shadow: 2px 2px var(--color-shadow);
-}
-
-.game-linear .scoreboard-row {
+.upgrades-header {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.2rem;
+}
+
+.upgrades-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--color-secondary);
+}
+
+.upgrades-header p {
+  margin: 0.5rem 0 0;
+  color: rgba(226, 244, 255, 0.7);
+}
+
+.show-purchased {
+  display: flex;
   align-items: center;
-  padding: 0.8rem 1.2rem;
-  background-color: var(--color-surface);
-  border: 2px solid var(--color-secondary);
-  border-radius: 14px;
-  margin: 0.8rem 0;
-  box-shadow: 0 2px 8px var(--color-shadow);
-  transition: var(--transition-default);
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: rgba(226, 244, 255, 0.75);
 }
 
-.game-linear .scoreboard-row:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--color-shadow);
+.upgrades-flex {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
 }
 
-.game-linear .scoreboard-row span {
-  font-family: 'Orbitron', Arial, sans-serif;
-  font-size: 1.1rem;
+.upgrade-card {
+  background: rgba(17, 26, 45, 0.8);
+  border-radius: 16px;
+  padding: 1rem;
+  border: 1px solid rgba(104, 172, 222, 0.2);
 }
 
-.game-linear .scoreboard-row span:first-child {
-  color: var(--color-text);
-  font-weight: 700;
+.upgrade-card.purchased {
+  opacity: 0.65;
+  border-style: dashed;
 }
 
-.game-linear .scoreboard-row span:last-child {
-    color: var(--color-secondary);
-    font-weight: 700;
+.incrementer-tooltip-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-/* Layout Selector Styles */
-.layout-selector {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-    padding: 1rem;
+.tooltip-heading {
+  font-weight: 600;
+  color: var(--color-secondary);
 }
 
-.layout-select {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border: 2px solid var(--color-primary);
-    border-radius: 8px;
-    background-color: var(--color-surface);
-    color: var(--color-text);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 200px;
+.tooltip-lore {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(226, 244, 255, 0.75);
 }
 
-.layout-select:hover {
-    border-color: var(--color-secondary);
-    box-shadow: 0 2px 8px var(--color-shadow);
+.tooltip-stat {
+  font-size: 0.85rem;
+  color: rgba(226, 244, 255, 0.7);
 }
 
-.layout-select:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px var(--color-primary);
+.tooltip-stat.highlight {
+  color: var(--color-accent);
+  font-weight: 600;
 }
 
-.layout-select option {
-    padding: 0.5rem;
-}
+@media (max-width: 1100px) {
+  .glimmerglass-body {
+    grid-template-columns: 1fr;
+  }
 
-/* Remove duplicate button styles since they're now in incrementer.css */
-/* Style for effect display text for better contrast - REQ-ISSUE-3 */
-.effect-display {
-  color: var(--color-text, #333333); /* Use existing text color variable or a dark fallback */
-  font-weight: bold; /* Optional: make it stand out a bit more */
+  .glimmerglass-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cast-light {
+    align-self: flex-start;
+  }
 }
