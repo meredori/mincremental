@@ -220,12 +220,13 @@ export function applyUpgrade(gameState, upgradeId, allUpgradeDefinitions) {
     upgrade.effects.forEach((effect) => {
       if (effect.targetId === "GLOBAL") {
         gameState.incrementers.forEach((targetIncrementer) => {
-          if (!targetIncrementer.isUnlocked) return;
           if (effect.type === "GLOBAL_MULTIPLIER") {
             targetIncrementer.upgrades.multiplier = parseFloat(
               (targetIncrementer.upgrades.multiplier * effect.value).toFixed(4)
             );
-            calculateIncrementerProduction(targetIncrementer);
+            if (targetIncrementer.isUnlocked) {
+              calculateIncrementerProduction(targetIncrementer);
+            }
           }
         });
       } else {
