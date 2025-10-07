@@ -30,7 +30,7 @@
 .header-titles p {
   margin: 0.5rem 0 0;
   max-width: 32rem;
-  color: rgba(226, 244, 255, 0.85);
+  color: var(--color-text-muted);
   line-height: 1.5;
 }
 
@@ -74,7 +74,7 @@
   font-size: 0.85rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(226, 244, 255, 0.7);
+  color: var(--color-text-muted);
 }
 
 .metric-value {
@@ -101,6 +101,12 @@
   gap: 1.5rem;
 }
 
+.glimmerglass-upgrades {
+  position: relative;
+  overflow: visible;
+  isolation: isolate;
+}
+
 .section-heading h3 {
   margin: 0;
   font-size: 1.4rem;
@@ -109,7 +115,7 @@
 
 .section-heading p {
   margin: 0.35rem 0 0;
-  color: rgba(226, 244, 255, 0.75);
+  color: var(--color-text-muted);
 }
 
 .tiers-grid {
@@ -153,7 +159,7 @@
   text-align: center;
   background: rgba(17, 26, 45, 0.5);
   border-radius: 16px;
-  color: rgba(226, 244, 255, 0.7);
+  color: var(--color-text-muted);
 }
 
 .locked-tiers {
@@ -186,13 +192,13 @@
 
 .locked-description {
   margin: 0;
-  color: rgba(226, 244, 255, 0.7);
+  color: var(--color-text-muted);
 }
 
 .locked-threshold {
   margin: 0;
   font-size: 0.85rem;
-  color: rgba(255, 234, 127, 0.8);
+  color: var(--color-accent);
 }
 
 .locked-tooltip {
@@ -219,7 +225,7 @@
 
 .upgrades-header p {
   margin: 0.5rem 0 0;
-  color: rgba(226, 244, 255, 0.7);
+  color: var(--color-text-muted);
 }
 
 .show-purchased {
@@ -227,7 +233,7 @@
   align-items: center;
   gap: 0.6rem;
   font-size: 0.9rem;
-  color: rgba(226, 244, 255, 0.75);
+  color: var(--color-text-muted);
 }
 
 .upgrades-flex {
@@ -241,6 +247,7 @@
   border-radius: 16px;
   padding: 1rem;
   border: 1px solid rgba(104, 172, 222, 0.2);
+  overflow: visible;
 }
 
 .upgrade-card.purchased {
@@ -262,12 +269,16 @@
 .tooltip-lore {
   margin: 0;
   font-size: 0.85rem;
-  color: rgba(226, 244, 255, 0.75);
+  color: var(--color-text-muted);
 }
 
 .tooltip-stat {
   font-size: 0.85rem;
-  color: rgba(226, 244, 255, 0.7);
+  color: var(--color-text-muted);
+}
+
+.glimmerglass-upgrades .tooltip-content {
+  z-index: 2000;
 }
 
 .tooltip-stat.highlight {
