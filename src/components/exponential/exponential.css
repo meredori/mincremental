@@ -1,22 +1,21 @@
 .game-exponential {
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 16px var(--shadow);
-  max-width: 600px;
+  box-shadow: 0 8px 16px var(--color-shadow);
+  max-width: 720px;
   margin: 2rem auto;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
+  transition: var(--transition-default);
+  color: var(--color-text);
 }
 
 .game-exponential h2 {
-  color: var(--primary);
+  color: var(--color-primary);
   font-family: 'Orbitron', Arial, sans-serif;
   font-size: 2rem;
   margin-bottom: 1.5rem;
   text-align: center;
-  text-shadow: 2px 2px var(--shadow);
+  text-shadow: 2px 2px var(--color-shadow);
 }
 
 .game-exponential .scoreboard {
@@ -24,17 +23,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1.2rem;
-  background-color: white;
-  border: 2px solid var(--secondary);
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-secondary);
   border-radius: 14px;
-  margin: 0.8rem 0;
-  box-shadow: 0 2px 8px var(--shadow);
-  transition: var(--transition);
+  margin: 0.8rem 0 2rem;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  transition: var(--transition-default);
 }
 
 .game-exponential .scoreboard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow);
+  box-shadow: 0 4px 12px var(--color-shadow);
 }
 
 .game-exponential .scoreboard span {
@@ -43,58 +42,80 @@
 }
 
 .game-exponential .scoreboard span:first-child {
-  color: var(--text);
+  color: var(--color-text);
   font-weight: 700;
 }
 
 .game-exponential .scoreboard span:last-child {
-  color: var(--secondary);
+  color: var(--color-secondary);
   font-weight: 700;
 }
 
-.game-exponential .incrementer {
-  text-align: center;
-  margin: 1rem 0;
+.exponential-incrementers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
 
-.game-exponential .increment-button {
-  display: inline-block;
-  background: #fff;
-  color: var(--text);
-  border: 2.5px solid var(--secondary);
-  border-radius: 18px;
-  padding: 0.7rem 1.4rem;
-  font-size: 1rem;
-  font-family: 'Poppins', Arial, sans-serif;
+.exponential-incrementer-card {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 12px var(--color-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: var(--transition-default);
+}
+
+.exponential-incrementer-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 20px var(--color-shadow);
+}
+
+.exponential-incrementer-header h3 {
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.exponential-incrementer-header p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.exponential-incrementer-body {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.exponential-incrementer-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.exponential-incrementer-stat .label {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.exponential-incrementer-stat .value {
+  font-size: 1.3rem;
   font-weight: 700;
-  box-shadow: 0 4px 16px var(--shadow);
-  cursor: pointer;
-  user-select: none;
-  transition: var(--transition);
-  width: 200px;
-  margin: 0.5rem auto;
+  color: var(--color-secondary);
 }
 
-.game-exponential .increment-button:hover {
-  background: var(--secondary);
-  color: #fff;
-  box-shadow: 0 8px 28px var(--shadow);
-  transform: scale(1.06) rotate(-2deg);
+.exponential-incrementer-card .cartoon-button {
+  align-self: stretch;
 }
 
-.game-exponential .increment-button:active {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 0 2px 8px var(--shadow);
-  transform: translateY(2px);
-}
-
-.game-exponential .increment-button span {
-  display: block;
-  line-height: 1.4;
-}
-
-.game-exponential .increment-button .cost {
-  font-size: 0.9rem;
-  opacity: 0.9;
+.exponential-incrementer-card .cartoon-button:disabled {
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.5);
+  cursor: not-allowed;
+  box-shadow: none;
 }

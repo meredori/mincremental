@@ -17,11 +17,32 @@ import {
 import Incrementer from "../shared/Incrementer";
 import UpgradeButton from "../shared/UpgradeButton";
 import Tooltip from "../shared/Tooltip"; // Import Tooltip for use if needed directly here, or ensure Incrementer uses it
+import { loadGameState, saveGameState } from "../../utils/saveSystem.js";
 
 const allUpgradeDefs = getAllUpgradeDefinitions();
+const LINEAR_GAME_ID = "linear";
 
 function LinearGame() {
   const [gameState, setGameState] = useState(() => initializeGame());
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    const savedState = loadGameState(LINEAR_GAME_ID);
+    if (savedState) {
+      setGameState((previousState) => ({
+        ...previousState,
+        ...savedState,
+      }));
+    }
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+    saveGameState(LINEAR_GAME_ID, gameState);
+  }, [gameState, isHydrated]);
 
   const handlePurchaseIncrementer = useCallback((incrementerId) => {
     setGameState(prevGameState => purchaseIncrementerLogic({ ...prevGameState }, incrementerId));

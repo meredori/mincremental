@@ -1,6 +1,6 @@
 .upgrade {
-  background: #fff;
-  border: 2px solid var(--secondary);
+  background: var(--color-surface);
+  border: 2px solid var(--color-secondary);
   border-radius: 8px;
   padding: 1rem;
   margin: 0.5rem auto;
@@ -22,19 +22,19 @@
 
 .upgrade-info h4 {
   margin: 0 0 0.4rem 0;
-  color: var(--primary);
+  color: var(--color-primary);
   font-size: 1rem;
 }
 
 .upgrade-info p {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--color-text);
   opacity: 0.8;
 }
 
 .upgrade-button {
-  background: var(--primary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 4px;
@@ -46,7 +46,7 @@
 }
 
 .upgrade-button:hover:not(:disabled) {
-  background: var(--secondary);
+  background: var(--color-secondary);
   transform: translateY(-1px);
 }
 
@@ -78,7 +78,7 @@
 .upgrade-card.purchased .upgrade-button {
     background: #f8f9fa;
     opacity: 0.7;
-    color: var(--text);
+    color: var(--color-text);
 }
 
 .upgrade-button:hover:not(:disabled) {

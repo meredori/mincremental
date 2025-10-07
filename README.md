@@ -44,6 +44,13 @@ Mincremental is a modular incremental game platform built with React. It feature
    npm test
    ```
 
+## Contribution Guidelines
+
+- Use a dedicated feature branch for each game-specific change (e.g., `feature/<game-name>-<feature>`). This keeps workstreams isolated and easier to review.
+- Shared systems (game registry, theming, save system, core UI components) must remain reusable across every game mode. Extend these modules instead of duplicating logic inside a single game.
+- When adding a new game, register it in `src/gameRegistry/index.js` with palette tokens, metadata, and a lazy component loader so the selector and router can pick it up automatically.
+- Keep palette-aware styles referencing CSS variables only—`ThemeProvider` will supply the correct colors per active game.
+
 ## File Structure
 
 ```

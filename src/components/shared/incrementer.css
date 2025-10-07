@@ -1,12 +1,12 @@
 .incrementer {
-  background: #fff;
-  border: 2px solid var(--secondary);
+  background: var(--color-surface);
+  border: 2px solid var(--color-secondary);
   border-radius: 12px;
   padding: 0.75rem;
   margin: 0.5rem 0;
   width: auto;
   min-width: 200px;
-  box-shadow: 0 2px 8px var(--shadow);
+  box-shadow: 0 2px 8px var(--color-shadow);
   box-sizing: border-box;
 }
 
@@ -64,14 +64,14 @@
 
 .incrementer-header h3 {
   margin: 0 0 0.5rem 0;
-  color: var(--primary);
+  color: var(--color-primary);
   font-size: 1.2rem;
 }
 
 .incrementer-desc {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--color-text);
   opacity: 0.8;
 }
 
@@ -91,7 +91,7 @@
 }
 
 .stat-label {
-  color: var(--text);
+  color: var(--color-text);
   opacity: 0.7;
 }
 
@@ -100,38 +100,38 @@
 }
 
 .stat-value.highlight {
-  color: var(--primary);
+  color: var(--color-primary);
 }
 
 .increment-button {
   display: inline-block;
-  background: #fff;
-  color: var(--text);
-  border: 2.5px solid var(--secondary);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 2.5px solid var(--color-secondary);
   border-radius: 18px;
   padding: 0.7rem 1.4rem;
   font-size: 1rem;
   font-family: 'Poppins', Arial, sans-serif;
   font-weight: 700;
-  box-shadow: 0 4px 16px var(--shadow);
+  box-shadow: 0 4px 16px var(--color-shadow);
   cursor: pointer;
   user-select: none;
-  transition: var(--transition);
+  transition: var(--transition-default);
   width: 100%;
   margin: 0.5rem auto;
 }
 
 .increment-button:hover {
-  background: var(--secondary);
+  background: var(--color-secondary);
   color: #fff;
-  box-shadow: 0 8px 28px var(--shadow);
+  box-shadow: 0 8px 28px var(--color-shadow);
   transform: scale(1.06) rotate(-2deg);
 }
 
 .increment-button:active {
-  background: var(--primary);
+  background: var(--color-primary);
   color: #fff;
-  box-shadow: 0 2px 8px var(--shadow);
+  box-shadow: 0 2px 8px var(--color-shadow);
   transform: translateY(2px);
 }
 
