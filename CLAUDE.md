@@ -18,7 +18,7 @@ Planned expansion (per `specs/design_doc.md`): 8-game suite with cross-game bonu
 |---|---|
 | UI Framework | React 18.3 (JSX, functional components, hooks) |
 | Build Tool | Vite 6.3 |
-| Testing | Jest 26.6 + React Testing Library 14 |
+| Testing | Jest 29.7 + React Testing Library 14 |
 | Styling | CSS modules + CSS custom properties (variables) |
 | Persistence | `localStorage` via `saveSystem.js` |
 | CSS Framework | Bootstrap 5.3 (available, used selectively) |
@@ -30,12 +30,12 @@ Planned expansion (per `specs/design_doc.md`): 8-game suite with cross-game bonu
 
 ```
 mincremental/
+├── index.html                        # HTML entry point (Vite)
 ├── src/
 │   ├── main.jsx                      # React DOM entry point
 │   ├── App.jsx                       # Root component: routing & view state
 │   ├── App.css                       # Global styles & CSS variable definitions
 │   ├── version.js                    # Single source of truth for APP_VERSION
-│   ├── index.html                    # HTML template
 │   ├── gameRegistry/
 │   │   └── index.js                  # Game registry: metadata, palette, lazy import
 │   ├── utils/
@@ -86,8 +86,7 @@ mincremental/
 ├── vite.config.js
 ├── jest.config.js
 ├── jest.setup.js
-├── babel.config.js
-└── .babelrc
+└── babel.config.js
 ```
 
 ---
@@ -118,7 +117,7 @@ npm run build
 
 ```bash
 npm test
-# Jest 26 with jsdom environment
+# Jest 29 with jsdom environment
 ```
 
 Tests use `identity-obj-proxy` for CSS imports, so stylesheets are mocked automatically.
@@ -211,13 +210,20 @@ loadComponent: () => import("../components/linear/LinearGame.jsx")
 ```
 `App.jsx` uses `React.lazy` + `Suspense` to code-split each game into its own bundle chunk.
 
-### No Global State Library
+### Global State (Meta-Progression)
 
-State management is intentionally local (React `useState`/`useEffect`). If cross-game state is needed for the meta-progression layer, the design doc recommends a context-based global store rather than adding Redux/Zustand.
+Per-game state is local (React `useState`/`useEffect`). Cross-game meta-progression (Echoes, achievements) uses **Zustand** (`zustand` package) — lightweight and compatible with the existing React patterns. See the design doc for the global state shape.
 
-### Dual Build Configs
+### Large Number Arithmetic
 
-Both `vite.config.js` (primary) and `webpack.config.js` (legacy) exist. Always use **Vite** (`npm run dev` / `npm run build`). The webpack config is not actively maintained.
+Games that reach astronomical values (exponential tiers, late-game scaling) should use **`break_infinity.js`** (`Decimal` class) instead of native JS numbers to avoid floating-point overflow. Import it as:
+```js
+import Decimal from "break_infinity.js";
+```
+
+### Animations
+
+**`framer-motion`** is available for UI animations. Use it for game card transitions, number pop effects, and unlock animations.
 
 ### Jest vs. Vite
 
@@ -239,8 +245,7 @@ Jest runs separately from Vite and uses its own Babel pipeline (`babel.config.js
 
 ## Common Gotchas
 
-- `package.json` lists the project name as `"heroville"` — this is a legacy artifact; the correct project name is **mincremental**.
 - The `exponential/Incrementer.jsx` is a game-specific copy, not the shared component. Prefer `shared/Incrementer.jsx` for new games.
-- Jest version is **26** (older); some newer Jest APIs may not be available. Check the docs for v26 if tests behave unexpectedly.
+- `jest-environment-jsdom` is a separate package (required since Jest 27+). It is listed in devDependencies and referenced by `testEnvironment: "jsdom"` in `jest.config.js`.
 - No environment variables are used. All config is in source files or `localStorage`.
 - The `scripts/` directory contains shell scripts for server management unrelated to the npm scripts.

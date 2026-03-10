@@ -27,8 +27,8 @@ describe('UpgradeButton', () => {
       />
     );
 
-    // Check that the upgrade name is displayed
-    expect(screen.getByText('Test Upgrade')).toBeInTheDocument();
+    // Check that the upgrade name is displayed (appears in button and tooltip)
+    expect(screen.getAllByText('Test Upgrade').length).toBeGreaterThan(0);
 
     // Check that the direct benefit label is displayed correctly
     // Based on currentProduction=10, newProduction=15, increase is 5
@@ -40,7 +40,7 @@ describe('UpgradeButton', () => {
     expect(screen.queryByText('Invalid Upgrade')).not.toBeInTheDocument(); // Keeping original check just in case
   });
 
-  test('renders "Invalid Upgrade Data" when upgrade prop is malformed', () => {
+  test('renders "Invalid Upgrade Data" when upgrade is null', () => {
     render(
       <UpgradeButton
         upgrade={null}
@@ -52,7 +52,9 @@ describe('UpgradeButton', () => {
       />
     );
     expect(screen.getByText('Invalid Upgrade Data')).toBeInTheDocument();
+  });
 
+  test('renders "Invalid Upgrade Data" when effects is empty array', () => {
     render(
       <UpgradeButton
         upgrade={{ ...mockUpgrade, effects: [] }}
@@ -64,7 +66,9 @@ describe('UpgradeButton', () => {
       />
     );
     expect(screen.getByText('Invalid Upgrade Data')).toBeInTheDocument();
+  });
 
+  test('renders "Invalid Upgrade Data" when effects is null', () => {
     render(
       <UpgradeButton
         upgrade={{ ...mockUpgrade, effects: null }}
@@ -89,7 +93,7 @@ describe('UpgradeButton', () => {
         disabled={false}
       />
     );
-    expect(screen.getByText('Test Upgrade')).toBeInTheDocument();
+    expect(screen.getAllByText('Test Upgrade').length).toBeGreaterThan(0);
     // Expect "to undefined" as per current component logic if affectedName is directly interpolated
     expect(screen.getByText(`+5.0/sec (+50.0%) to undefined`)).toBeInTheDocument();
     expect(screen.queryByText('Invalid Upgrade Data')).not.toBeInTheDocument();
