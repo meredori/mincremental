@@ -27,16 +27,20 @@
 
 ## 1. Platform Architecture
 
-The platform shell (App, GameSelector, GlobalHeader, ThemeProvider, saveSystem) remains game-agnostic. Each game is a self-contained module registered in `gameRegistry/index.js`.
+The platform shell (App, GameSelector, GlobalHeader, ThemeProvider, saveSystem) remains game-agnostic. Each game is a self-contained module registered in `src/gameRegistry/index.js`.
 
 ### Global vs Local State
 
 | Scope | Key | Contents |
 |---|---|---|
-| **Global** | `mincremental:global` | Echoes, achievements, unlocked games, ascension rank |
-| **Per-game** | `mincremental:<gameId>` | All local game state, prestige count |
+| **Global** | `mincremental:global` | Echoes, achievements, unlocked games, ascension rank, prestige counts |
+| **Per-game** | `mincremental:<gameId>` | All local game state (score, producers, upgrades, etc.) |
 
 The global state is loaded once at app start and made available to all games via a `GlobalContext`. When a game awards an achievement or triggers a prestige, it dispatches an action to the global context which handles persistence.
+
+**Canonical game ID:** The `id` field in the game registry entry (e.g. `'clockwork'`, `'forge'`) is the single canonical identifier. It is used as both the localStorage key suffix (`mincremental:<id>`) and as the key in `globalState.prestigeCounts`. The old codebase used inconsistent IDs (`exp`/`lin` for selection, `exponential`/`linear` for storage); the new convention is one consistent id everywhere.
+
+**Prestige count authority:** `prestigeCounts` lives exclusively in global state. Per-game local state does not store its own prestige count — it reads from `GlobalContext` when needed.
 
 ### Game Registration Shape (extended)
 
@@ -65,7 +69,7 @@ The global state is loaded once at app start and made available to all games via
 
 ### Currency: Echoes
 
-**Echoes** are the global meta-currency. They persist across all resets and cannot be spent down to zero once earned. They are earned by:
+**Echoes** are the global meta-currency. They persist across all resets and can be spent freely — the balance can reach zero, but never goes negative (purchases are blocked if the player cannot afford them). They are earned by:
 
 - Prestiging within any game (base amount set per game, scaled by prestige depth)
 - Unlocking cross-game achievements
@@ -103,7 +107,7 @@ The prestige button is gated behind a meaningful threshold so first prestige fee
 | The Forge | Temper | Materials & buildings | Blueprints | +X% to all production rates |
 | Heroville | Rebirth | Hero levels & gear | Class unlocks | Heroes start at higher base stats |
 | The Kingdom | Era | Population & buildings | Technologies | Start new era with bonus resources |
-| The Alchemist | Distil | Discovered recipes (kept!) | Formulae (lore) | New element tier unlocked |
+| The Alchemist | Distil | Resources & reagents | Discovered recipes, Formulae (lore) | New element tier unlocked |
 | The Exchange | Market Reset | Routes & businesses | Trade licenses | Price floor raised on all goods |
 | The Hive | Metamorphosis | Swarm count | Evolved traits | Trait slots increase by 1 |
 | The Loop | Ascend | Loop count resets to 0 | Action queue depth | Action slots increase permanently |
@@ -119,10 +123,17 @@ Achievements are one-time milestones. Once earned, they are stored globally and 
 ```js
 {
   id: 'forge-first-prestige',
-  sourceGame: 'forge',
+
+  // A specific game id, or 'any' for achievements that can be triggered in any game.
+  // 'any' achievements use a separate condition function rather than a per-game check.
+  sourceGame: 'forge',              // string | 'any'
+
   title: 'Master of Metal',
   description: 'Complete your first Temper in The Forge.',
-  bonusTarget: 'clockwork',
+
+  // A specific game id, or 'all' to apply the bonus to every registered game.
+  bonusTarget: 'clockwork',         // string | 'all'
+
   bonus: {
     type: 'PRODUCTION_MULTIPLIER',   // shared bonus type enum
     value: 1.05,                     // +5%
@@ -130,6 +141,15 @@ Achievements are one-time milestones. Once earned, they are stored globally and 
   }
 }
 ```
+
+**Sentinel values:**
+
+| Field | Value | Meaning |
+|---|---|---|
+| `sourceGame` | `'any'` | Achievement is evaluated globally (e.g. "prestige in any 4 games"). The trigger condition is a function on global state rather than a per-game event. |
+| `bonusTarget` | `'all'` | `getMetaBonuses` applies this bonus when called for any game id. |
+
+`getMetaBonuses(gameId, globalState)` filters by `bonusTarget === gameId || bonusTarget === 'all'`.
 
 ### Bonus Types (shared enum)
 
@@ -435,12 +455,15 @@ Both existing games' save keys (`mincremental:linear`, `mincremental:exponential
   echoes: 0,
   totalEchoesEarned: 0,
   achievements: [],               // array of achievement ids
-  prestigeCounts: {},             // { gameId: count }
+  prestigeCounts: {},             // { gameId: count } — authoritative prestige record
   echoShopPurchases: [],          // array of shop item ids
   unlockedGames: ['clockwork', 'forge'],
+  ascensionRank: 0,               // total prestiges across all games; used for display and some bonuses
   version: 1                      // for migration
 }
 ```
+
+`ascensionRank` is a derived convenience value: `Object.values(prestigeCounts).reduce((sum, n) => sum + n, 0)`. It is recomputed and stored on every prestige dispatch so that UI components can read it without recalculating.
 
 ### Meta Bonus Application
 
