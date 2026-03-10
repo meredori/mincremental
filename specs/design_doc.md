@@ -14,11 +14,11 @@
    - [Game 1 — The Clockwork](#game-1--the-clockwork-dimensionsabstract-numbers)
    - [Game 2 — The Forge](#game-2--the-forge-resource-chains--crafting)
    - [Game 3 — Heroville](#game-3--heroville-idle-rpg--combat)
-   - [Game 4 — The Kingdom](#game-4--the-kingdom-civilisationpopulation)
-   - [Game 5 — The Alchemist](#game-5--the-alchemist-discoverycombination)
-   - [Game 6 — The Exchange](#game-6--the-exchange-economytrading)
-   - [Game 7 — The Hive](#game-7--the-hive-swarmevolution)
-   - [Game 8 — The Loop](#game-8--the-loop-time-loopsmeta-reset)
+   - [Game 4 — The Kingdom](#game-4--the-kingdom-civilisation--population)
+   - [Game 5 — The Alchemist](#game-5--the-alchemist-discovery--combination)
+   - [Game 6 — The Exchange](#game-6--the-exchange-economy--trading)
+   - [Game 7 — The Hive](#game-7--the-hive-swarm--evolution)
+   - [Game 8 — The Loop](#game-8--the-loop-time-loops--meta-reset)
 6. [Cross-Game Bonus Matrix](#6-cross-game-bonus-matrix)
 7. [Progression & Unlock Order](#7-progression--unlock-order)
 8. [Technical Notes](#8-technical-notes)
@@ -458,12 +458,18 @@ Both existing games' save keys (`mincremental:linear`, `mincremental:exponential
   prestigeCounts: {},             // { gameId: count } — authoritative prestige record
   echoShopPurchases: [],          // array of shop item ids
   unlockedGames: ['clockwork', 'forge'],
-  ascensionRank: 0,               // total prestiges across all games; used for display and some bonuses
   version: 1                      // for migration
 }
 ```
 
-`ascensionRank` is a derived convenience value: `Object.values(prestigeCounts).reduce((sum, n) => sum + n, 0)`. It is recomputed and stored on every prestige dispatch so that UI components can read it without recalculating.
+**`ascensionRank` is not persisted.** It is a derived value computed on every state load and every `PRESTIGE` dispatch:
+
+```js
+const deriveAscensionRank = (state) =>
+  Object.values(state.prestigeCounts).reduce((sum, n) => sum + n, 0);
+```
+
+Storing it would risk drift if `prestigeCounts` is ever modified outside the `PRESTIGE` reducer (e.g. during save migration or manual repair). Components that need it read it from a context selector that derives it inline from `prestigeCounts`. This keeps `prestigeCounts` as the single source of truth and ensures `ascensionRank` is always consistent.
 
 ### Meta Bonus Application
 
