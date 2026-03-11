@@ -26,16 +26,39 @@ const TICK_MS = 1000;
 // Achievement trigger ids emitted by this game
 const ACHIEVEMENT_FIRST_PRESTIGE = 'cw-infinity';
 
-// Required fields on a saved Clockwork state object
+// Required top-level fields on a saved Clockwork state object
 const REQUIRED_SAVE_KEYS = ['points', 'infinityCount', 'infinityMultiplier', 'dimensions'];
+// Required fields on each dimension entry
+const REQUIRED_DIM_KEYS = ['id', 'count', 'purchased', 'baseCost', 'baseProduction'];
+const EXPECTED_DIM_IDS = DIMENSION_CONFIGS.map((c) => c.id);
+
+function isFiniteNumber(v) {
+  return typeof v === 'number' && isFinite(v) && !isNaN(v);
+}
+
+function isValidDimension(dim, expectedId) {
+  return (
+    dim &&
+    typeof dim === 'object' &&
+    REQUIRED_DIM_KEYS.every((k) => k in dim) &&
+    dim.id === expectedId &&
+    isFiniteNumber(dim.count) &&
+    isFiniteNumber(dim.purchased) &&
+    isFiniteNumber(dim.baseCost) &&
+    isFiniteNumber(dim.baseProduction)
+  );
+}
 
 function isValidSave(saved) {
   return (
     saved &&
     typeof saved === 'object' &&
     REQUIRED_SAVE_KEYS.every((k) => k in saved) &&
+    isFiniteNumber(saved.points) &&
+    isFiniteNumber(saved.infinityCount) &&
     Array.isArray(saved.dimensions) &&
-    saved.dimensions.length === DIMENSION_CONFIGS.length
+    saved.dimensions.length === DIMENSION_CONFIGS.length &&
+    saved.dimensions.every((dim, i) => isValidDimension(dim, EXPECTED_DIM_IDS[i]))
   );
 }
 

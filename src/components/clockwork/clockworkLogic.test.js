@@ -312,3 +312,46 @@ describe('initGame — save validation contract', () => {
     expect(state.dimensions.length).toBe(DIMENSION_CONFIGS.length);
   });
 });
+
+// ── isValidSave — dimension content validation ────────────────────────────────
+// isValidSave lives in ClockworkGame.jsx (not pure logic) so we test the
+// contract by verifying that initGame() always produces outputs that would pass.
+
+describe('initGame — dimension save contract', () => {
+  const REQUIRED_DIM_KEYS = ['id', 'count', 'purchased', 'baseCost', 'baseProduction'];
+
+  test('every dimension has all required keys', () => {
+    const state = initGame();
+    state.dimensions.forEach((dim) => {
+      REQUIRED_DIM_KEYS.forEach((k) => {
+        expect(k in dim).toBe(true);
+      });
+    });
+  });
+
+  test('every dimension id matches the expected config id', () => {
+    const state = initGame();
+    state.dimensions.forEach((dim, i) => {
+      expect(dim.id).toBe(DIMENSION_CONFIGS[i].id);
+    });
+  });
+
+  test('every dimension has finite numeric fields', () => {
+    const state = initGame();
+    state.dimensions.forEach((dim) => {
+      ['count', 'purchased', 'baseCost', 'baseProduction'].forEach((field) => {
+        expect(typeof dim[field]).toBe('number');
+        expect(isFinite(dim[field])).toBe(true);
+        expect(isNaN(dim[field])).toBe(false);
+      });
+    });
+  });
+
+  test('top-level numeric fields are finite', () => {
+    const state = initGame();
+    ['points', 'infinityCount', 'infinityMultiplier'].forEach((field) => {
+      expect(typeof state[field]).toBe('number');
+      expect(isFinite(state[field])).toBe(true);
+    });
+  });
+});

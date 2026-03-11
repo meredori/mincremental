@@ -33,7 +33,6 @@ function EchoShop({ onClose }) {
     <div
       className="echo-shop-overlay"
       onClick={onClose}
-      aria-hidden="true"
     >
       <div
         ref={panelRef}
