@@ -4,9 +4,11 @@ import GlobalHeader from "./components/global/GlobalHeader.jsx";
 import GameSelector from "./components/gameselector/GameSelector.jsx";
 import GlobalFooter from "./components/global/GlobalFooter.jsx";
 import ThemeProvider from "./components/global/ThemeProvider.jsx";
+import { GlobalProvider } from "./context/GlobalContext.jsx";
 import { APP_VERSION } from "./version.js";
 import { getAvailableGames, getGameById } from "./gameRegistry/index.js";
 import "./App.css";
+import "./components/global/echoShop.css";
 
 const initialUser = { avatarUrl: "", username: "Guest", level: null };
 
@@ -41,6 +43,7 @@ function App() {
   }, [selectedGame]);
 
   return (
+    <GlobalProvider>
     <ThemeProvider palette={selectedGame?.palette}>
       <div className="app-container">
         <GlobalHeader
@@ -72,6 +75,7 @@ function App() {
         />
       </div>
     </ThemeProvider>
+    </GlobalProvider>
   );
 }
 
