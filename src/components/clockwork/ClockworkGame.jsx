@@ -3,7 +3,7 @@
 // Reads meta bonuses from the global store on init and after prestige.
 // Dispatches prestige and achievement events to the global store.
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useGlobalStore from '../../store/globalStore.js';
 import { getMetaBonuses, applyEchoShopBonuses } from '../../meta/metaBonuses.js';
 import {
@@ -15,6 +15,7 @@ import {
   getPointsPerSecond,
   formatNumber,
   INFINITY_THRESHOLD,
+  DIMENSION_CONFIGS,
 } from './clockworkLogic.js';
 import { loadGameState, saveGameState } from '../../utils/saveSystem.js';
 import './clockwork.css';
@@ -22,8 +23,21 @@ import './clockwork.css';
 const GAME_ID = 'clockwork';
 const TICK_MS = 1000;
 
-// ── Achievement trigger ids emitted by this game ──────────────────────────────
+// Achievement trigger ids emitted by this game
 const ACHIEVEMENT_FIRST_PRESTIGE = 'cw-infinity';
+
+// Required fields on a saved Clockwork state object
+const REQUIRED_SAVE_KEYS = ['points', 'infinityCount', 'infinityMultiplier', 'dimensions'];
+
+function isValidSave(saved) {
+  return (
+    saved &&
+    typeof saved === 'object' &&
+    REQUIRED_SAVE_KEYS.every((k) => k in saved) &&
+    Array.isArray(saved.dimensions) &&
+    saved.dimensions.length === DIMENSION_CONFIGS.length
+  );
+}
 
 function buildMetaBonuses(globalState) {
   const base = getMetaBonuses(GAME_ID, globalState.achievements);
@@ -31,7 +45,6 @@ function buildMetaBonuses(globalState) {
 }
 
 function ClockworkGame() {
-  const globalState = useGlobalStore.getState();
   const awardAchievement = useGlobalStore((s) => s.awardAchievement);
   const prestigeGlobal = useGlobalStore((s) => s.prestige);
 
@@ -39,8 +52,7 @@ function ClockworkGame() {
   const [gameState, setGameState] = useState(() => {
     const metaBonuses = buildMetaBonuses(useGlobalStore.getState());
     const saved = loadGameState(GAME_ID);
-    if (saved) {
-      // Re-apply metaBonuses on top of saved run
+    if (isValidSave(saved)) {
       return {
         ...saved,
         metaProductionMultiplier: metaBonuses.productionMultiplier,
@@ -83,8 +95,14 @@ function ClockworkGame() {
 
     const { newState, echoValue } = performPrestige(gameState, metaBonuses);
 
-    // Award global prestige (echoes + count)
-    prestigeGlobal(GAME_ID, echoValue);
+    // Scale echo payout by achievement-based extra prestige currency bonus.
+    // echoing-legacy shop multiplier is applied inside the global store prestige action.
+    const adjustedEchoValue = Math.max(
+      1,
+      Math.floor(echoValue * (1 + metaBonuses.extraPrestigeCurrency)),
+    );
+
+    prestigeGlobal(GAME_ID, adjustedEchoValue);
 
     // Award first-prestige achievement if this is the first Infinity
     if (gameState.infinityCount === 0) {

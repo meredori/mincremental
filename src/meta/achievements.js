@@ -214,7 +214,7 @@ export const ACHIEVEMENTS = [
     bonus: {
       type: BONUS_TYPES.OFFLINE_MULTIPLIER,
       value: 1.25,
-      description: '+15 min offline progress window in all games',
+      description: '+25% offline progress duration in all games',
     },
   },
   // ── Cross-game (sourceGame: 'any') ───────────────────────────────────────────

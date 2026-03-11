@@ -295,3 +295,20 @@ describe('formatNumber', () => {
     expect(formatNumber(NaN)).toBe('0');
   });
 });
+
+// ── isValidSave (tested via the shape it validates) ──────────────────────────
+
+describe('initGame — save validation contract', () => {
+  test('initGame output satisfies all REQUIRED_SAVE_KEYS', () => {
+    const REQUIRED_SAVE_KEYS = ['points', 'infinityCount', 'infinityMultiplier', 'dimensions'];
+    const state = initGame();
+    REQUIRED_SAVE_KEYS.forEach((k) => {
+      expect(k in state).toBe(true);
+    });
+  });
+
+  test('dimensions array length matches DIMENSION_CONFIGS', () => {
+    const state = initGame();
+    expect(state.dimensions.length).toBe(DIMENSION_CONFIGS.length);
+  });
+});

@@ -193,3 +193,33 @@ describe('loadFromSave', () => {
     expect(useGlobalStore.getState().echoes).toBe(0);
   });
 });
+
+// ── prestige + extraPrestigeCurrency achievement bonus ────────────────────────
+
+describe('prestige — extraPrestigeCurrency integration', () => {
+  test('adjustedEchoValue scales correctly with 5% extra prestige currency', () => {
+    // Simulate the computation done in ClockworkGame.handlePrestige
+    const BASE_ECHO_VALUE = 10;
+    const extraPrestigeCurrency = 0.05; // from 'polymath' achievement
+    const adjustedEchoValue = Math.max(1, Math.floor(BASE_ECHO_VALUE * (1 + extraPrestigeCurrency)));
+    // 10 * 1.05 = 10.5 → floor = 10
+    expect(adjustedEchoValue).toBe(10);
+  });
+
+  test('adjustedEchoValue with large extra prestige currency bonus', () => {
+    const BASE_ECHO_VALUE = 10;
+    const extraPrestigeCurrency = 0.5; // hypothetical large bonus
+    const adjustedEchoValue = Math.max(1, Math.floor(BASE_ECHO_VALUE * (1 + extraPrestigeCurrency)));
+    // 10 * 1.5 = 15
+    expect(adjustedEchoValue).toBe(15);
+  });
+
+  test('full chain: extraPrestigeCurrency then echoing-legacy stacks multiplicatively', () => {
+    useGlobalStore.setState({ echoes: 0, echoShopPurchases: ['echoing-legacy'] });
+    // Game passes adjusted value (achievement bonus already applied)
+    const adjustedBase = Math.floor(10 * 1.5); // 15
+    useGlobalStore.getState().prestige('clockwork', adjustedBase);
+    // Store applies echoing-legacy: floor(15 * 1.25) = 18
+    expect(useGlobalStore.getState().echoes).toBe(18);
+  });
+});

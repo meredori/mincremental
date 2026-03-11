@@ -1,0 +1,117 @@
+/* src/components/global/echoShop.css
+   Imported from App.jsx so it is always in the bundle,
+   never blocked by lazy game loading. */
+
+/* ── Echo Shop overlay ───────────────────────────────────────────────────── */
+.echo-shop-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.echo-shop-panel {
+  background: var(--surface, #fff);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 1.5rem;
+  width: min(560px, 92vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  outline: none;
+}
+
+.echo-shop-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.echo-shop-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary);
+  flex: 1;
+  margin: 0;
+}
+
+.echo-shop-balance {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 1.05rem;
+}
+
+.echo-shop-close {
+  padding: 0.3rem 0.7rem;
+  font-size: 1rem;
+}
+
+.echo-shop-subtitle {
+  font-size: 0.88rem;
+  color: var(--text);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.echo-shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.echo-shop-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--background, #f5f5f5);
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+}
+
+.echo-shop-item.purchased {
+  border-color: var(--accent);
+  opacity: 0.7;
+}
+
+.echo-shop-item.unaffordable {
+  opacity: 0.55;
+}
+
+.echo-shop-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.echo-shop-item-name {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+
+.echo-shop-item-desc {
+  font-size: 0.8rem;
+  color: var(--text);
+  opacity: 0.75;
+}
+
+.echo-shop-buy-btn {
+  min-width: 5.5rem;
+  font-size: 0.88rem;
+  padding: 0.35rem 0.8rem;
+}
+
+.echo-chip {
+  font-size: 0.95rem;
+  padding: 0.35rem 0.9rem;
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+}

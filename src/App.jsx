@@ -8,6 +8,7 @@ import { GlobalProvider } from "./context/GlobalContext.jsx";
 import { APP_VERSION } from "./version.js";
 import { getAvailableGames, getGameById } from "./gameRegistry/index.js";
 import "./App.css";
+import "./components/global/echoShop.css";
 
 const initialUser = { avatarUrl: "", username: "Guest", level: null };
 
