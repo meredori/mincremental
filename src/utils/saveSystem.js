@@ -32,6 +32,10 @@ export const saveGameState = (gameId, state) => {
   }
 };
 
+// Convenience wrappers for the single global meta-state slot
+export const loadGlobalState = (fallback = null) => loadGameState('global', fallback);
+export const saveGlobalState = (state) => saveGameState('global', state);
+
 export const resetGameState = (gameId) => {
   if (typeof window === "undefined" || !window.localStorage) {
     return;

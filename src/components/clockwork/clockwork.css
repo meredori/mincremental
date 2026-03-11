@@ -1,0 +1,265 @@
+/* src/components/clockwork/clockwork.css */
+/* The Clockwork — deep navy + electric cyan palette */
+
+.clockwork-game {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ── Header row ──────────────────────────────────────────────────────────── */
+.clockwork-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+/* ── Score panel ─────────────────────────────────────────────────────────── */
+.clockwork-score-panel {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.clockwork-score-value {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.clockwork-score-label {
+  font-size: 0.85rem;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.clockwork-pps {
+  font-size: 1rem;
+  color: var(--secondary);
+}
+
+/* ── Infinity prestige row ───────────────────────────────────────────────── */
+.clockwork-prestige-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.clockwork-infinity-btn {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  background: var(--accent);
+  color: var(--background);
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.clockwork-infinity-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.clockwork-infinity-info {
+  font-size: 0.9rem;
+  color: var(--secondary);
+}
+
+/* ── Dimensions grid ─────────────────────────────────────────────────────── */
+.clockwork-dimensions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.clockwork-dim-card {
+  background: var(--surface);
+  border: 1.5px solid var(--primary);
+  border-radius: 10px;
+  padding: 0.9rem 1.2rem;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: border-color 0.2s;
+}
+
+.clockwork-dim-card:hover {
+  border-color: var(--accent);
+}
+
+.clockwork-dim-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.clockwork-dim-name {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 1rem;
+}
+
+.clockwork-dim-subtext {
+  font-size: 0.82rem;
+  color: var(--text);
+  opacity: 0.75;
+}
+
+.clockwork-dim-count {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.clockwork-dim-buy {
+  min-width: 7rem;
+  text-align: center;
+}
+
+/* ── Meta info strip ─────────────────────────────────────────────────────── */
+.clockwork-meta-strip {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  color: var(--secondary);
+  border-top: 1px solid var(--primary);
+  padding-top: 0.75rem;
+  opacity: 0.85;
+}
+
+.clockwork-meta-strip span {
+  white-space: nowrap;
+}
+
+/* ── Echo Shop overlay ───────────────────────────────────────────────────── */
+.echo-shop-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.echo-shop-panel {
+  background: var(--surface, #fff);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 1.5rem;
+  width: min(560px, 92vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.echo-shop-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.echo-shop-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary);
+  flex: 1;
+  margin: 0;
+}
+
+.echo-shop-balance {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 1.05rem;
+}
+
+.echo-shop-close {
+  padding: 0.3rem 0.7rem;
+  font-size: 1rem;
+}
+
+.echo-shop-subtitle {
+  font-size: 0.88rem;
+  color: var(--text);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.echo-shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.echo-shop-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--background, #f5f5f5);
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+}
+
+.echo-shop-item.purchased {
+  border-color: var(--accent);
+  opacity: 0.7;
+}
+
+.echo-shop-item.unaffordable {
+  opacity: 0.55;
+}
+
+.echo-shop-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.echo-shop-item-name {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+
+.echo-shop-item-desc {
+  font-size: 0.8rem;
+  color: var(--text);
+  opacity: 0.75;
+}
+
+.echo-shop-buy-btn {
+  min-width: 5.5rem;
+  font-size: 0.88rem;
+  padding: 0.35rem 0.8rem;
+}
+
+.echo-chip {
+  font-size: 0.95rem;
+  padding: 0.35rem 0.9rem;
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+}
