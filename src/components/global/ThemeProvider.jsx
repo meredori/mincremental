@@ -6,6 +6,8 @@ const DEFAULT_PALETTE = {
   accent: "#ffe66d",
   background: "#fff5f7",
   text: "#2d3436",
+  "text-muted": "#59677d",
+  "text-strong": "#1a2233",
   surface: "#ffffff",
   shadow: "rgba(0, 0, 0, 0.1)",
 };
