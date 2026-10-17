@@ -235,11 +235,14 @@ Jest runs separately from Vite and uses its own Babel pipeline (`babel.config.js
 
 `specs/design_doc.md` is the authoritative roadmap. Before implementing new games or meta-features, read the relevant sections:
 
-- **Section 1** - Platform architecture & global state shape
-- **Section 2** - Per-game prestige system patterns
-- **Section 3** - Meta-progression (Echoes currency, Echo Shop)
-- **Section 4** - Achievement system & cross-game bonus matrix
-- **Sections 5-12** - Individual game designs (The Clockwork, The Forge, Heroville, The Kingdom, The Alchemist, The Exchange, The Hive, The Loop)
+- **Sections 1-2** - Design pillars, layers and pacing targets
+- **Section 3** - The roster (18-game cap, 14 proposed, 4 open slots)
+- **Section 4** - Mastery vs depth (the core progression rule)
+- **Sections 5-7** - Kingdom (land, policies, projects), succession and Legacy, Exchange/Caravan/Warehouse
+- **Sections 8-9** - Automation and attention, the Eternal Kingdom endgame
+- **Sections 10-11** - Technical architecture and milestones
+
+Note: the "Tech Stack", "Repository Structure" and "Key Conventions" sections above describe the current JavaScript placeholder code. The design doc's Section 10 describes the planned TypeScript rebuild; this file will be rewritten as part of milestone M0.
 
 ---
 
