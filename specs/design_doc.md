@@ -2,7 +2,7 @@
 
 > **Vision:** One kingdom, many games. Each mini-game is a building inside the walls or a place in the lands around them, and each is a complete game with its own loop, resources, upgrades and mastery. The Kingdom sits above them as the only layer that connects them. Generations of monarchs (successions) build a Dynasty whose Legacy steadily widens what the Kingdom can do, until the final Eternal Kingdom runs every game at once and lets the player reach 100% of the content without another reset.
 
-*Document version: 0.2. Supersedes v0.1 (the 8-game suite with Echoes and cross-game achievement bonuses). Section 12 lists what changed and why.*
+*Document version: 0.3. Supersedes v0.1 (the 8-game suite with Echoes and cross-game achievement bonuses). Section 12 lists what changed and why.*
 
 ---
 
@@ -88,7 +88,7 @@ The base game is capped at **18 standalone mini-games**. Fourteen are proposed; 
 - Menagerie does not supply mandatory creatures to the Arena. The Armoury does not supply mandatory equipment to anything.
 - Mines, Dungeons and Docks may share the run-based skill-tree structure, provided their moment-to-moment interactions stay distinct.
 - Zones describe where a game sits in the world. The Surrounds are reserved for run-based games so the zone signals the genre; other zones group games more loosely.
-- Each game gets a one-page spec (loop, resources, depth tiers, mastery tracks, automation plan) before it is implemented.
+- Each game gets its own design and implementation phase, using the template in Section 10.8, once the foundation is proven. Only Blacksmith and Mines are specified for M1.
 
 ---
 
@@ -263,7 +263,8 @@ Rebuild the skeleton on current versions; nothing in the current gameplay code c
 | Tests | Vitest + React Testing Library | Replaces Jest and the separate Babel pipeline |
 | State | Zustand 5 | One store per persistence scope (below) |
 | Numbers | break_infinity.js 2.x, **engine-wide** | Changed from v0.1: with up to 18 economies each scaling beyond the last, all resource values use `Decimal` |
-| Animation | motion (formerly framer-motion) | |
+| Animation | motion (formerly framer-motion) | UI transitions in panels |
+| Scenes | PixiJS v8 + `@pixi/react` 8 | Canvas scenes for games that benefit from them (see 10.7) |
 | Styling | CSS modules + custom properties | Drops Bootstrap and Sass |
 | Quality | ESLint, Prettier, GitHub Actions (tests + build) | |
 
@@ -271,71 +272,172 @@ Rebuild the skeleton on current versions; nothing in the current gameplay code c
 
 ```
 src/
-  engine/        tick loop, offline catch-up, Decimal helpers, modifier registry, save + migrations
-  meta/          dynasty store (permanent), reign store (succession-scoped), succession logic
-  kingdom/       land, policies, projects, exchange (stubbed until unlocked), Kingdom UI
-  games/<id>/    one folder per mini-game: definition, logic, UI
-  content/       data: land configs, policy forks, projects, legacy tree, depth tiers, roster
-  shell/         app frame, navigation, theming
+  engine/        clock, fixed-step simulation, seeded RNG, actions, Decimal helpers,
+                 number formatting, modifier registry, save/load, migrations, offline catch-up
+  render/        SceneHost (PixiJS lifecycle) and small presentation helpers
+  ui/            shared React components (resource readouts, buttons, upgrade lists, tooltips)
+  meta/          dynasty store (permanent), reign store (one succession), succession logic
+  kingdom/       land, policies, projects, Exchange interface (stubbed), Kingdom UI
+  games/<id>/    one folder per mini-game: logic, content, panel and/or scene
+  content/       Kingdom-level data: land configs, policy forks, projects, Legacy tree, roster
+  shell/         app frame, navigation, settings, theming
 ```
 
 ### 10.3 Persistence scopes
 
 | Scope | Store | Contents |
 |---|---|---|
-| **Dynasty** (permanent) | `dynasty` | Legacy, Legacy tree purchases, mastery per game and tier, unlocked depth tiers, breakthroughs and partial funding, land capacity and configurations, policy flexibility, roster unlocks, Eternal flag, statistics |
-| **Reign** (one succession) | `reign` | Monarch number, plot placements, policy choices, investments, project progress, temporary Exchange investments, each placed game's economy state |
+| **Dynasty** (permanent) | `dynasty` | Legacy, Legacy tree purchases, mastery per game, unlocked depth tiers, breakthroughs and partial funding, land capacity and configurations, policy flexibility, roster unlocks, Eternal flag, statistics |
+| **Reign** (one succession) | `reign` | Monarch number, plot placements, policy choices, investments, project progress, each placed game's state (including its RNG state) |
 
-Saves are one versioned blob with ordered migrations, plus export and import as text.
+Saves are one versioned blob with ordered migrations, plus export and import as text. Each game's state also carries its own version and migration, so a game can change its state shape without touching the others.
 
-### 10.4 Game contract
+### 10.4 What the platform owns and what each game owns
 
-Every mini-game implements one interface, so the Kingdom, succession, offline progress and automation work the same way for all of them:
+| Platform (shared) | Each mini-game |
+|---|---|
+| Time: the clock, fixed steps, pause, speed changes | Its mechanics, rules and moment-to-moment interaction |
+| Persistence, migrations, export and import | Its state shape and resources |
+| Offline progress and background simulation | How it advances, including any fast-forward shortcut |
+| Seeded random number generation | When and how it uses randomness |
+| Modifiers: resolving Kingdom, policy, Legacy and mastery effects | Which modifier keys it reads and what they do |
+| Mastery and depth records, and unlock conditions | What its mastery tracks and depth tiers mean |
+| Number formatting and common UI components | Its own panel layout |
+| Scene lifecycle and presentation helpers | Its own scene, art and effects |
+| Kingdom placement, projects and succession | What it contributes to the Kingdom and how it rebuilds |
+
+The platform never assumes what a game's mechanics are. Shared abstractions are added only once a real game needs them, and revisited when the second and third games that use them arrive.
+
+### 10.5 Game module contract
+
+Every mini-game exports one module. The contract is deliberately small: it covers only what the platform must call, and leaves mechanics to the game.
 
 ```ts
-interface GameDefinition<S> {
+interface GameModule<S, A> {
   id: GameId;
-  zone: ZoneId;
   plotType: 'internal' | 'external';
-  depthTiers: DepthTier[];            // tier 0 plus tiers unlocked by breakthroughs or Legacy
-  masteryTracks: MasteryTrack[];      // per tier: XP sources, levels and what each level grants
-  modifiers: ModifierKey[];           // named modifiers this game reads, e.g. 'blacksmith.speed'
-  createState(ctx: GameContext): S;   // fresh economy for a new reign
-  rebuild(state: S, ctx: GameContext): S;          // fast reconstruction from mastery
-  tick(state: S, dt: number, ctx: GameContext): S; // active simulation
-  simulate(state: S, seconds: number, ctx: GameContext): S; // offline and background catch-up
-  attention(state: S, ctx: GameContext): 'autonomous' | 'occasional' | 'active';
-  contributions(state: S): ResourceBundle;         // resources available to Kingdom projects
-  Component: React.ComponentType<GameProps<S>>;
+  presentation: 'panel' | 'scene' | 'hybrid';
+  manifest: GameManifest;          // depth tier ids, mastery track ids, modifier keys, contributed resources
+  stateVersion: number;
+  migrate?(old: unknown, fromVersion: number): S;
+
+  init(ctx: GameContext): S;                               // state for a new reign, already rebuilt from mastery
+  apply(state: S, action: A, ctx: GameContext): S;         // player or automation action
+  step(state: S, ctx: GameContext): StepResult<S>;         // one fixed simulation step; may emit presentation events
+  fastForward?(state: S, seconds: number, ctx: GameContext): S; // optional shortcut for long spans (10.6)
+  summary(state: S, ctx: GameContext): GameSummary;        // mastery gained, attention state, Kingdom contributions
+
+  Panel?: React.ComponentType<PanelProps<S, A>>;           // React interface (panel and hybrid games)
+  Scene?: SceneModule<S, A>;                               // canvas scene (scene and hybrid games)
 }
 ```
 
-`GameContext` carries the game's unlocked depth, mastery levels and resolved modifiers. Games never import other games.
+- `GameContext` gives the game its unlocked depth tiers, mastery levels, resolved modifiers, the step length and the random generator bound to its state.
+- Mastery and depth are stored by the platform as plain records (track id to experience, list of unlocked tier ids). The game decides what they unlock; the platform only persists them, shows them in the Kingdom and checks them in unlock conditions.
+- Games never import other games or the Kingdom.
 
-### 10.5 Modifiers and content as data
+### 10.6 Time and simulation
 
-- Projects, policies, Legacy nodes, mastery levels and depth tiers all emit **modifiers**: `{ key, op, value, source }`.
-- The modifier registry resolves them per game each tick. Games read only their own keys.
-- Land configurations, policy forks, projects, the Legacy tree and the roster are plain TypeScript data in `src/content/`, validated by types and unit tests. Adding a game or a land configuration is a data change.
+Simulation is independent of React, PixiJS and frame rate. It advances only through actions and elapsed game time, and rendering is never required for progress.
 
-### 10.6 Background simulation
+1. **One clock, fixed steps.** The platform clock runs the simulation in fixed steps (100 ms by default, configurable per game) from a timer, not from `requestAnimationFrame`, which stops in hidden tabs. Pause and speed changes live in the clock.
+2. **Every placed game steps, watched or not.** The open game and background games run the same `step` code, so results are the same whether the player is watching, another game is open, or rendering runs at a reduced rate.
+3. **Determinism.** Each game's random state lives in its saved state and advances only inside `apply` and `step`. Given the same starting state, actions and elapsed time, a game produces the same result however the elapsed time is split. Tests check this for every game by comparing an uninterrupted run against a run broken into chunks and a save-load in the middle.
+4. **Fast-forward for long spans.** Offline catch-up and very long background spans replay fixed steps in batches. A game whose steps are expensive (thousands of entities) can provide `fastForward`, which must either be exact or match step-by-step results within a tolerance that its tests enforce. Automated, mastered games are where this matters most.
+5. **Offline progress.** On load, elapsed real time (capped by the offline window, which Legacy can extend) is processed in chunks with a progress indicator, through the same code path.
+6. **Presentation events.** `step` and `apply` may return events (for example `rockCracked`). They are delivered only to the open game's scene and never feed back into state; in the background they are dropped.
+7. **Budget.** The clock measures simulation time per tick. If background games exceed the budget, it batches their steps on later ticks rather than skipping them. Moving simulation to a Web Worker is possible later because game logic is pure and serialisable, but it is not built until profiling shows a need.
 
-With many games running, only the open game ticks at full rate. The others run through `simulate` at a coarse interval, and offline time is applied the same way. Autonomous games must be cheap to simulate.
+### 10.7 Presentation styles
+
+React stays responsible for application layout, navigation, the Kingdom, management screens and upgrades, with Motion for interface animation. Canvas rendering is available for games whose play benefits from it; no game is forced onto it.
+
+| Style | Rendering | Likely games (decided in each game's spec) |
+|---|---|---|
+| **Panel** | React only | Blacksmith, Apothecary, Academy, Theatre |
+| **Scene** | Canvas scene with a thin React HUD | Mines, Dungeons, Docks, The Walls, Arena, Warehouse, Farm |
+| **Hybrid** | React layout with an embedded scene, or drag-and-drop over a scene | Armoury, possibly Menagerie |
+
+**Renderer: PixiJS v8 with `@pixi/react` 8** (React 19 compatible), evaluated in M0 with a spike scene before Mines is built.
+
+| | PixiJS | Phaser |
+|---|---|---|
+| What it is | 2D WebGL renderer: sprites, spritesheets, particles, pointer events | Full game framework: loop, scenes, physics, input, audio |
+| Fits our simulation | Yes; it only draws, and the platform clock stays in charge | Its own loop and scene system would duplicate or fight the platform clock |
+| React integration | First-party `@pixi/react` | Usually run alongside React rather than inside it |
+| Weight | Smaller; we add only what games use | Larger; much of it would go unused |
+
+Phaser would only be reconsidered if a game demonstrates a need PixiJS can't meet, such as substantial physics.
+
+**Shared presentation helpers in `src/render/`**, each kept small:
+
+| Capability | When it is built |
+|---|---|
+| `SceneHost`: create and destroy the renderer, resize, device pixel ratio, pause when hidden, release textures and listeners when switching games | M0 |
+| Asset loading for sprites and spritesheets | M0 |
+| Pointer and touch input turned into game actions | M0 |
+| Animation sequences and feedback effects (frame animations, tweens, floating numbers, simple particles) | M1, for Mines |
+| Positioning and movement with interpolation between simulation steps | M1, for Mines |
+| Grid and tile layout | M1, for the Mines rock grid |
+| Visual layers (background, entities, effects, HUD) | M1 |
+| Pause, resume, speed changes and a reduced-motion setting that scenes and Motion both respect | M1 |
+| Drag-and-drop placement | When the first game needs it (likely Armoury or Warehouse) |
+| Path-following movement | When the first game needs it (likely Warehouse) |
+
+No generic physics or entity-component system is built unless a real game demonstrates the need.
+
+**Scene rules**
+
+1. Scenes read game state and draw it; they never change state directly.
+2. Clicks, drags and taps become typed actions (for example `mines/strike`) dispatched through the same path as a React button, so input is testable and automation can use the same actions.
+3. Only the open game has a live scene. Background games have no renderer at all.
+4. Scenes interpolate between simulation steps so motion looks smooth even at a low step rate.
+5. Placeholder art (shapes, simple spritesheets) must be swappable for final art without touching logic.
+
+### 10.8 Per-game design template
+
+Each game gets its own design and implementation phase after the foundation is proven. Its spec covers:
+
+1. The unique interaction and progression loop
+2. The resource economy
+3. Kingdom depth unlocks (tiers and what opens them)
+4. Persistent mastery and automation
+5. Visual and gameplay requirements, including presentation style
+6. The offline simulation approach (pure stepping, or a fast-forward and how it is validated)
+7. Progression and balancing targets
+8. Kingdom contributions
 
 ---
 
 ## 11. Milestones
 
-Each milestone ends in something playable or verifiable. Games are added in small batches, each with its one-page spec first.
+The strategy is foundation first: build the shared systems, prove they support two genuinely different mini-games, validate that the experience is fun, and only then design and implement further games individually, in small groups.
 
 | Milestone | Scope | Proves |
 |---|---|---|
-| **M0 Foundation** | Repo cleanup, TypeScript/React 19/Vite 8/Vitest, lint and CI, shell, engine (tick, Decimal, modifier registry, versioned saves), game contract types, content schemas | The platform builds, tests and saves. No gameplay. |
-| **M1 First playable** | Kingdom with basic land (2 internal + 1 external), the Labour fork and a few projects; Blacksmith and Mines at tier 0 plus one tier each; mastery with automation and rebuild; succession with a small Legacy tree (including the alternative land configuration); one breakthrough that opens Blacksmith mithril, funded from Blacksmith and Mines; Exchange interface stubbed and hidden | A player can progress in Blacksmith or Mines, earn mastery, succeed, rebuild faster, and unlock genuinely new content through the Kingdom |
-| **M2 Dynasty breadth** | Larger Legacy tree (capacity tiers, policy flexibility), Learning and Land forks, two or three more games, offline progress, attention indicators | Land and policy constraints loosen over successions; attention stays manageable |
-| **M3 Trade layer** | Exchange (Legacy unlock), Caravan, Warehouse, Trade fork | Exchange stays non-trivialising; Caravan improves it; Warehouse is optional |
-| **M4 Roster growth** | Remaining proposed games in batches; open slots filled only when mechanics are found | The data-driven Kingdom scales without rewrites |
-| **M5 Eternal Kingdom** | Final capacity, all policies, no mandatory succession, completion tracking | All content reachable in one Kingdom |
+| **M0 Foundation** | Repo cleanup and toolchain; shared simulation (clock, fixed steps, seeded RNG, actions, offline catch-up); persistence with migrations; modifiers; Kingdom definitions as data; game module contract; rendering integration (`SceneHost` with PixiJS); a throwaway test game used to exercise all of it | The platform builds, tests, saves, resumes and mounts both a panel and a scene. No real gameplay and no unused systems. |
+| **M1 First playable** | Placeholder art and simplified mechanics. A minimal Kingdom where games occupy plots (2 internal + 1 external); **Blacksmith** as a traditional panel incremental; **Mines** as an animated scene with rocks to strike, mining feedback, resources and a skill tree whose upgrades visibly change the scene; basic projects, the Labour fork, mastery with automation and rebuild, succession with a tiny Legacy tree; one breakthrough that opens a Blacksmith depth tier; save, load and resume of everything; Exchange interface stubbed and hidden. An animated Kingdom view only if it doesn't delay the rest. | The complete early loop works and is genuinely playable. We validate the experience here before adding any other game. |
+| **M2 onward: small groups** | Two or three games at a time, each from its own spec, with Legacy breadth (land capacity, policy flexibility) growing alongside. Shared abstractions are revisited whenever a new game exposes a real requirement. | Each group adds new kinds of play without rewriting the foundation. |
+| **Trade layer** (within the groups) | Exchange (Legacy unlock), Caravan, Warehouse, Trade fork | Exchange stays non-trivialising; Caravan improves it; Warehouse stays optional |
+| **Eternal Kingdom** | Final capacity, all policies, no mandatory succession, completion tracking | All content reachable in one Kingdom |
+
+The 18-game target and the Eternal Kingdom shape the data model from M0 (plot types, capacity, policy flexibility as data), but none of those later systems are built until their milestone.
+
+### 11.1 Smallest path to a playable M1
+
+Each step is one reviewable pull request that leaves the app working.
+
+| Step | Delivers | Done when |
+|---|---|---|
+| 1. Cleanup and toolchain | Placeholders and stray tooling removed; TypeScript, React 19, Vite 8, Vitest, ESLint, Prettier, CI; empty shell | CI is green on an app that renders a blank Kingdom screen |
+| 2. Engine core | Clock with fixed steps, pause and speed; seeded RNG; actions; Decimal helpers and number formatting; modifier registry; save, load, migrations, export and import; offline catch-up | A throwaway counter game passes determinism tests (chunked vs uninterrupted vs save-load) |
+| 3. Kingdom skeleton | Land configs and plot placement as data; dynasty and reign stores; game registry; placing the test game on a plot | A game can be placed, run in the background and resumed after reload |
+| 4. Scene spike | `SceneHost` with PixiJS: mount, resize, pause, cleanup on switch; pointer input to actions; asset loading | Switching between a panel and a scene repeatedly leaks no renderer, textures or listeners |
+| 5. Blacksmith tier 0 | Panel game: gather, smelt and craft chain with a bottleneck; mastery experience; first automation | Blacksmith is fun for about 15 minutes with placeholder UI |
+| 6. Mines tier 0 | Scene game: rock grid, strike action, crack and break animation, ore drops, energy per run, skill tree with visible effects (stronger pick, more rocks, an auto-miner) | Mines plays on mouse and touch and keeps progressing in the background |
+| 7. Kingdom loop | Plot selection UI, the Labour fork, 2–3 investment projects, the succession screen, a tiny Legacy tree (including the alternative land configuration) | A full reign can be played and passed on |
+| 8. Mastery rebuild and depth | Mastery rebuild at reign start; one breakthrough funded across successions that opens Blacksmith's next tier | After two or three successions, Blacksmith rebuilds quickly and its new tier is the focus |
+| 9. Resume and playtest pass | Offline progress for both games, save versioning test, reduced-motion setting, a first balance pass, optionally a simple Kingdom view | A fresh player can play several successions and close and reopen the app without losing anything |
 
 The M0 cleanup removes the placeholder Linear and Exponential games, `.roo/`, `.roomodes`, `scripts/` (Apache httpd scripts), `.sonarcloud.properties` (unless still used) and the Babel and Jest configs, keeps the potion sprites, and rewrites `README.md` and `CLAUDE.md`.
 
@@ -359,6 +461,9 @@ The M0 cleanup removes the placeholder Linear and Exponential games, `.roo/`, `.
 | break_infinity only for big-number games | `Decimal` engine-wide | Scaling across up to 18 economies |
 | React context with a reducer | Zustand stores per persistence scope | Matches the stack decision |
 | First milestone included a basic Exchange (draft review) | Exchange stubbed and hidden in M1 | Exchange is a Legacy unlock |
+| Every game is a React interface (v0.2 draft) | Panel, scene and hybrid presentation; PixiJS scenes where play benefits | Visual games need sprites, movement and effects |
+| Background games use a separate aggregated simulation (v0.2 draft) | Every placed game runs the same fixed-step simulation; optional tested fast-forward for long spans | Results must match whether watched, backgrounded or offline |
+| One-page specs for all games up front (v0.2 draft) | Foundation and two games first; each further game designed individually | Abstractions should be validated by real games |
 
 ---
 
